@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
@@ -22,10 +23,31 @@ class AuthController extends Controller
                 'age' => 'numeric',
                 'phone' => 'numeric|unique:users,phone',
                 'dob' => 'date',
-                'gender' => 'string'
+                'gender' => 'string',
+                'profile1' => 'image|mimes:jpeg,png,jpg|max:2048',
+                'profile2' => 'image|mimes:jpeg,png,jpg|max:2048',
+                'selfie' => 'image|mimes:jpeg,png,jpg|max:2048',
             ]);
         } catch (ValidationException $e) {
             return response()->json(['error' => $e->errors()], 400);
+        }
+
+        if ($request->hasFile('profile1')) {
+            $profile1_path = $request->file('profile1')->store('image', 'public');
+        } else {
+            $profile1_path = NULL;
+        }
+
+        if ($request->hasFile('profile2')) {
+            $profile2_path = $request->file('profile2')->store('image', 'public');
+        } else {
+            $profile2_path = NULL;
+        }
+
+        if ($request->hasFile('selfie')) {
+            $selfie_path = $request->file('selfie')->store('image', 'public');
+        } else {
+            $selfie_path = NULL;
         }
 
         $user = User::create([
@@ -36,7 +58,10 @@ class AuthController extends Controller
             'age' => $data['age'],
             'phone' => $data['phone'],
             'dob' => $data['dob'],
-            'gender' => $data['gender']
+            'gender' => $data['gender'],
+            'profile1' => $profile1_path,
+            'profile2' => $profile2_path,
+            'selfie' => $selfie_path
         ]);        
 
         $token = $user->createToken('apiToken')->plainTextToken;
@@ -78,13 +103,18 @@ class AuthController extends Controller
         $user = Auth::user();
 
         if ($user) {
+            $userId = $user->id;
+        } else {
+            // Handle the case when no user is authenticated
+            $userId = null;
+        }
+
+        if ($user) {
             $user->tokens->each(function ($token) {
                 $token->delete();
             });
 
-            // You can perform additional logout actions here, such as clearing session data.
-
-            return response()->json(['message' => 'Logged out successfully']);
+            return response()->json(['message' => 'Logged out successfully'], 201);
         }
 
         return response()->json(['message' => 'User not found'], 404);

@@ -26,7 +26,10 @@ class User extends Authenticatable
         'age',
         'phone',
         'dob',
-        'gender'
+        'gender',
+        'profile1',
+        'profile2',
+        'selfie'
     ];
 
     /**
