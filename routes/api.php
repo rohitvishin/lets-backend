@@ -3,7 +3,9 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\PlansController;
+use App\Http\Controllers\API\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,6 +21,14 @@ use App\Http\Controllers\AuthController;
 Route::group(['middleware' => 'auth:sanctum'], function(){
 
     Route::post('/logout', [AuthController::class, 'logout']);
+
+    Route::get('/getUser', [UserController::class, 'index']);
+
+    Route::post('/updateUser', [UserController::class, 'update']);
+
+    Route::post('/resetPassword', [UserController::class, 'changePassword']);
+
+    Route::get('/getPackages', [PlansController::class, 'index']);
 
 });
 
