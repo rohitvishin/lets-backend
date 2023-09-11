@@ -17,7 +17,9 @@ use App\Http\Controllers\API\UserController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
+Route::get('/test',function(){
+    return "Test";
+});
 Route::group(['middleware' => 'auth:sanctum'], function(){
 
     Route::post('/logout', [AuthController::class, 'logout']);
