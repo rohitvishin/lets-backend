@@ -36,6 +36,8 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
 
     Route::post('/buySubscriptions', [SubscriptionController::class, 'store']);
 
+    Route::post('/verifyEmail', [AuthController::class, 'verify_email']);
+
     Route::post('/letsCreator', [LetsController::class, 'letsCreator']);
 
     Route::post('/letsAcceptor', [LetsController::class, 'letsAcceptor']);
@@ -45,5 +47,7 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
 Route::post('/signup', [AuthController::class, 'sign_up']);
 
 Route::post('/login', [AuthController::class, 'login']);
+
+Route::post('/verifyEmail', [AuthController::class, 'verify_email']);
 
 ?>

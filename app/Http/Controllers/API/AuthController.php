@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SendOTP;
+
 class AuthController extends Controller
 {
     public function sign_up(Request $request){
@@ -97,6 +100,29 @@ class AuthController extends Controller
         ];
 
         return response($res, 201);
+    }
+
+    public function verify_email(Request $request) {
+        $data = $request->validate([
+            'email' => 'required',
+            'otp' => 'required'
+        ]);
+
+        $user = User::where('email', $data['email'])->first();
+
+        $mailData = [
+            'email' => $user['email'],
+            'otp' => $data['otp']
+        ];
+
+        if($user) {
+            Mail::to($data['email'])->send(new SendOTP($mailData));
+
+            return response()->json(['message' => 'Email Verified successfully'], 201);
+        }
+
+        return response()->json(['message' => 'Email not found'], 404);
+
     }
 
     public function logout()

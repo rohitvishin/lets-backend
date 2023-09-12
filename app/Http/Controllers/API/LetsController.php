@@ -73,17 +73,17 @@ class LetsController extends Controller
             $creator_longitude = $request->creator_longitude;
             $creator_latitude = $request->creator_latitude;
 
-            if ($request->hasFile('creator_selfie')) {
-                $creator_selfie_path = $request->file('creator_selfie')->store('image', 'public');
-            } else {
-                $creator_selfie_path = NULL;
-            }
+            // if ($request->hasFile('creator_selfie')) {
+            //     $creator_selfie_path = $request->file('creator_selfie')->store('image', 'public');
+            // } else {
+            //     $creator_selfie_path = NULL;
+            // }
 
             $newLetsRecord = LetsModel::create([
                 'user_id' => $user->id,
                 'event_name' => $event_name,
                 'duration' => $duration,
-                'creator_selfie' => $creator_selfie_path,
+                // 'creator_selfie' => $creator_selfie_path,
                 'creator_longitude' => $creator_longitude,
                 'creator_latitude' => $creator_latitude
             ]);
