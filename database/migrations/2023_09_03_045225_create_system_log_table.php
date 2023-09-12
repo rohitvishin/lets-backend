@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('logs')->nullable();
             $table->string('module')->nullable();
+            $table->string('platform')->nullable();
             $table->integer('user_id')->unsigned()->nullable();
             $table->timestamps();
         });

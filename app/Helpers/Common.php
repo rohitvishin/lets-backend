@@ -14,7 +14,7 @@ class Common {
         die();
     }
 
-    public static function logSystemActivity($logs='', $module='') {
+    public static function logSystemActivity($logs='', $module='', $platform='') {
         $user = Auth::user();
 
         $userId = $user->id;
@@ -22,6 +22,7 @@ class Common {
         $log = [];
     	$log['logs'] = $logs;
     	$log['module'] = $module;
+        $log['platform'] = $platform;
     	$log['user_id'] = $userId;
         $log['created_at'] = date('Y-m-d H:i:s', time());
 

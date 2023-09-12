@@ -63,7 +63,7 @@ class AuthController extends Controller
             'profile1' => $profile1_path,
             'profile2' => $profile2_path,
             'selfie' => $selfie_path
-        ]);        
+        ]);
 
         $token = $user->createToken('apiToken')->plainTextToken;
 

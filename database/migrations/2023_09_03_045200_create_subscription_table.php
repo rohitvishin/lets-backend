@@ -21,8 +21,8 @@ return new class extends Migration
             $table->integer('lets_count')->nullable();
             $table->integer('remaining_days_count')->nullable();
             $table->string('validity')->nullable();
-            $table->dateTime('start_date')->nullable();
-            $table->dateTime('end_date')->nullable();
+            $table->string('start_date')->nullable();
+            $table->string('end_date')->nullable();
             $table->enum('status', ['0', '1'])
                 ->default('1')
                 ->comment('1: active, 0: inactive');

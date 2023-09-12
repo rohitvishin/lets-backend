@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name')->nullable();
             $table->integer('amount')->nullable();
-            $table->integer('lets_id')->unsigned()->nullable();
+            $table->integer('lets_count')->unsigned()->nullable();
             $table->string('validity')->nullable();
             $table->enum('isCarryforward', ['0', '1'])
                 ->default('0')

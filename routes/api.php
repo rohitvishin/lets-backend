@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\PlansController;
 use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\API\SubscriptionController;
+use App\Http\Controllers\API\LetsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +31,12 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
     Route::post('/resetPassword', [UserController::class, 'changePassword']);
 
     Route::get('/getPackages', [PlansController::class, 'index']);
+
+    Route::post('/buySubscriptions', [SubscriptionController::class, 'store']);
+
+    Route::post('/letsCreator', [LetsController::class, 'letsCreator']);
+
+    Route::post('/letsAcceptor', [LetsController::class, 'letsAcceptor']);
 
 });
 

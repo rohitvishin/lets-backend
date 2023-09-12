@@ -18,10 +18,10 @@ return new class extends Migration
             $table->string('event_name')->nullable();
             $table->string('duration')->nullable();
             $table->string('creator_selfie')->nullable();
-            $table->decimal('creator_longitude', 10, 8)->nullable();
-            $table->decimal('creator_latitude', 10, 8)->nullable();
-            $table->decimal('acceptor_longitude', 10, 8)->nullable();
-            $table->decimal('acceptor_latitude', 10, 8)->nullable();
+            $table->string('creator_longitude')->nullable();
+            $table->string('creator_latitude')->nullable();
+            $table->string('acceptor_longitude')->nullable();
+            $table->string('acceptor_latitude')->nullable();
             $table->enum('handshake_status', ['0', '1', '2'])
                   ->default('0')
                   ->comment('1: landmark, 2: device');
