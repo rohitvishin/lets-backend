@@ -31,6 +31,12 @@ class AuthController extends Controller
                 'profile1' => 'image|mimes:jpeg,png,jpg|max:2048',
                 'profile2' => 'image|mimes:jpeg,png,jpg|max:2048',
                 'selfie' => 'image|mimes:jpeg,png,jpg|max:2048',
+                'state' => 'required|string',
+                'city' => 'required|string',
+                // 'gender_filter' => 'required|string',
+                'radius_filter' => 'numeric',
+                'from_age_filter' => 'numeric',
+                'to_age_filter' => 'numeric',
             ]);
         } catch (ValidationException $e) {
             return response()->json(['error' => $e->errors()], 400);
@@ -65,7 +71,13 @@ class AuthController extends Controller
             'gender' => $data['gender'],
             'profile1' => $profile1_path,
             'profile2' => $profile2_path,
-            'selfie' => $selfie_path
+            'selfie' => $selfie_path,
+            'state' => $data['state'],
+            'city' => $data['city'],
+            // 'gender_filter' => $data['gender_filter'],
+            'radius_filter' => $data['radius_filter'],
+            'from_age_filter' => $data['from_age_filter'],
+            'to_age_filter' => $data['to_age_filter'],
         ]);
 
         $token = $user->createToken('apiToken')->plainTextToken;

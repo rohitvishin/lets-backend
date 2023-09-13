@@ -31,8 +31,14 @@ return new class extends Migration
             $table->string('profile1')->nullable();
             $table->string('profile2')->nullable();
             $table->string('selfie')->nullable();
+            $table->string('state')->nullable();
+            $table->string('city')->nullable();
             $table->string('longitude')->nullable();
             $table->string('latitude')->nullable();
+            $table->string('gender_filter')->nullable();
+            $table->string('radius_filter')->nullable();
+            $table->string('from_age_filter')->nullable();
+            $table->string('to_age_filter')->nullable();
             $table->enum('status', ['0', '1'])
                   ->default('1')
                   ->comment('1: active, 0: inactive');

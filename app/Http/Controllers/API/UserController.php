@@ -83,6 +83,12 @@ class UserController extends Controller
                 'profile1' => 'image|mimes:jpeg,png,jpg|max:2048',
                 'profile2' => 'image|mimes:jpeg,png,jpg|max:2048',
                 'selfie' => 'image|mimes:jpeg,png,jpg|max:2048',
+                'state' => 'required|string',
+                'city' => 'required|string',
+                // 'gender_filter' => 'required|string',
+                'radius_filter' => 'numeric',
+                'from_age_filter' => 'numeric',
+                'to_age_filter' => 'numeric',
             ]);
             
         } catch (ValidationException $e) {
@@ -121,6 +127,12 @@ class UserController extends Controller
         $userData->profile1 = $profile1_path;
         $userData->profile2 = $profile2_path;
         $userData->selfie = $selfie_path;
+        $userData->state = $data['state'];
+        $userData->city = $data['city'];
+        // $userData->gender_filter = $data['gender_filter'];
+        $userData->radius_filter = $data['radius_filter'];
+        $userData->from_age_filter = $data['from_age_filter'];
+        $userData->to_age_filter = $data['to_age_filter'];
 
         // Save the updated user
         $userData->save();

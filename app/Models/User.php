@@ -32,7 +32,13 @@ class User extends Authenticatable
         'profile1',
         'profile2',
         'selfie',
-        'status'
+        'status',
+        'state',
+        'city',
+        'gender_filter',
+        'radius_filter',
+        'from_age_filter',
+        'to_age_filter'
     ];
 
     /**
