@@ -113,6 +113,11 @@ class UserController extends Controller
             $selfie_path = NULL;
         }
 
+        // $gender_filter = isset($data['gender_filter']) ? $data['gender_filter'] : null;
+        $radius_filter = isset($data['radius_filter']) ? $data['radius_filter'] : 200;
+        $from_age_filter = isset($data['from_age_filter']) ? $data['from_age_filter'] : null;
+        $to_age_filter = isset($data['to_age_filter']) ? $data['to_age_filter'] : null;
+
         $userData = User::find($user->id);
 
         // Update the user's information using the $user object
@@ -129,10 +134,10 @@ class UserController extends Controller
         $userData->selfie = $selfie_path;
         $userData->state = $data['state'];
         $userData->city = $data['city'];
-        // $userData->gender_filter = $data['gender_filter'];
-        $userData->radius_filter = $data['radius_filter'];
-        $userData->from_age_filter = $data['from_age_filter'];
-        $userData->to_age_filter = $data['to_age_filter'];
+        // $userData->gender_filter = $gender_filter;
+        $userData->radius_filter = $radius_filter;
+        $userData->from_age_filter = $from_age_filter;
+        $userData->to_age_filter = $to_age_filter;
 
         // Save the updated user
         $userData->save();

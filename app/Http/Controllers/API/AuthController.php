@@ -60,6 +60,11 @@ class AuthController extends Controller
             $selfie_path = NULL;
         }
 
+        // $gender_filter = isset($data['gender_filter']) ? $data['gender_filter'] : null;
+        $radius_filter = isset($data['radius_filter']) ? $data['radius_filter'] : 200;
+        $from_age_filter = isset($data['from_age_filter']) ? $data['from_age_filter'] : $data['age'] - 2;
+        $to_age_filter = isset($data['to_age_filter']) ? $data['to_age_filter'] : $data['age'] + 2;
+
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
@@ -74,10 +79,10 @@ class AuthController extends Controller
             'selfie' => $selfie_path,
             'state' => $data['state'],
             'city' => $data['city'],
-            // 'gender_filter' => $data['gender_filter'],
-            'radius_filter' => $data['radius_filter'],
-            'from_age_filter' => $data['from_age_filter'],
-            'to_age_filter' => $data['to_age_filter'],
+            // 'gender_filter' => $gender_filter,
+            'radius_filter' => $radius_filter,
+            'from_age_filter' => $from_age_filter,
+            'to_age_filter' => $to_age_filter,
         ]);
 
         $token = $user->createToken('apiToken')->plainTextToken;
@@ -108,6 +113,8 @@ class AuthController extends Controller
         $token = $user->createToken('apiToken')->plainTextToken;
 
         $res = [
+            'user' => $user,
+            'msg' => 'Logged-in Successfully',
             'token' => $token
         ];
 
