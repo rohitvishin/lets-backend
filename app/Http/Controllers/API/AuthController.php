@@ -121,20 +121,15 @@ class AuthController extends Controller
         ]);
 
         $user = User::where('email', $data['email'])->first();
+        if($user)
+        return response()->json(['message' => 'Email already exist'], 409);
 
         $mailData = [
-            'email' => $user['email'],
+            'email' => $data['email'],
             'otp' => $data['otp']
         ];
-
-        if($user) {
-            Mail::to($data['email'])->send(new SendOTP($mailData));
-
-            return response()->json(['message' => 'Email Verified successfully'], 201);
-        }
-
-        return response()->json(['message' => 'Email not found'], 404);
-
+        Mail::to($data['email'])->send(new SendOTP($mailData));
+        return response()->json(['message' => 'Email Verified successfully'], 201);
     }
 
     public function logout()
