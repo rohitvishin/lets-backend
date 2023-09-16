@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->integer('user_id')->nullable();
             $table->integer('lets_id')->nullable();
-            $table->decimal('user_longitude', 10, 8)->nullable();
-            $table->decimal('user_latitude', 10, 8)->nullable();
+            $table->string('user_longitude')->nullable();
+            $table->string('user_latitude')->nullable();
             $table->string('action')->nullable();
             $table->timestamps();
         });

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('acceptor_id')->unsigned()->nullable();
             $table->string('event_name')->nullable();
             $table->string('duration')->nullable();
-            $table->string('creator_selfie')->nullable();
+            $table->string('acceptor_selfie')->nullable();
             $table->string('creator_longitude')->nullable();
             $table->string('creator_latitude')->nullable();
             $table->string('acceptor_longitude')->nullable();

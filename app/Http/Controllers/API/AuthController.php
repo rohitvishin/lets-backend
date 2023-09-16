@@ -31,8 +31,8 @@ class AuthController extends Controller
                 'profile1' => 'image|mimes:jpeg,png,jpg|max:2048',
                 'profile2' => 'image|mimes:jpeg,png,jpg|max:2048',
                 'selfie' => 'image|mimes:jpeg,png,jpg|max:2048',
-                'state' => 'required|string',
-                'city' => 'required|string',
+                // 'state' => 'required|string',
+                // 'city' => 'required|string',
                 // 'gender_filter' => 'required|string',
                 // 'radius_filter' => 'numeric',
                 // 'from_age_filter' => 'numeric',
@@ -77,8 +77,8 @@ class AuthController extends Controller
             'profile1' => $profile1_path,
             'profile2' => $profile2_path,
             'selfie' => $selfie_path,
-            'state' => $data['state'],
-            'city' => $data['city'],
+            // 'state' => $data['state'],
+            // 'city' => $data['city'],
             // 'gender_filter' => $data['gender_filter'],
             'radius_filter' => 500,
             'from_age_filter' => $data['age']-2,
@@ -102,7 +102,7 @@ class AuthController extends Controller
             'password' => 'required|string'
         ]);
 
-        $user = User::where('email', $data['email'])->first();
+        $user = User::where('email', $data['email'])->where('status', '1')->first();
 
         if (!$user || !Hash::check($data['password'], $user->password)) {
             return response([
