@@ -34,9 +34,9 @@ class AuthController extends Controller
                 'state' => 'required|string',
                 'city' => 'required|string',
                 // 'gender_filter' => 'required|string',
-                'radius_filter' => 'numeric',
-                'from_age_filter' => 'numeric',
-                'to_age_filter' => 'numeric',
+                // 'radius_filter' => 'numeric',
+                // 'from_age_filter' => 'numeric',
+                // 'to_age_filter' => 'numeric',
             ]);
         } catch (ValidationException $e) {
             return response()->json(['error' => $e->errors()], 400);
@@ -79,10 +79,10 @@ class AuthController extends Controller
             'selfie' => $selfie_path,
             'state' => $data['state'],
             'city' => $data['city'],
-            // 'gender_filter' => $gender_filter,
-            'radius_filter' => $radius_filter,
-            'from_age_filter' => $from_age_filter,
-            'to_age_filter' => $to_age_filter,
+            // 'gender_filter' => $data['gender_filter'],
+            'radius_filter' => 500,
+            'from_age_filter' => $data['age']-2,
+            'to_age_filter' => $data['age']+2,
         ]);
 
         $token = $user->createToken('apiToken')->plainTextToken;
@@ -128,20 +128,15 @@ class AuthController extends Controller
         ]);
 
         $user = User::where('email', $data['email'])->first();
+        if($user)
+        return response()->json(['message' => 'Email already exist'], 409);
 
         $mailData = [
-            'email' => $user['email'],
+            'email' => $data['email'],
             'otp' => $data['otp']
         ];
-
-        if($user) {
-            Mail::to($data['email'])->send(new SendOTP($mailData));
-
-            return response()->json(['message' => 'Email Verified successfully'], 201);
-        }
-
-        return response()->json(['message' => 'Email not found'], 404);
-
+        Mail::to($data['email'])->send(new SendOTP($mailData));
+        return response()->json(['message' => 'Email Verified successfully'], 201);
     }
 
     public function logout()
