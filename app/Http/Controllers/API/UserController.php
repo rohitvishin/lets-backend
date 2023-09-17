@@ -208,7 +208,7 @@ class UserController extends Controller
                 'state' => 'required|string',
                 'city' => 'required|string',
                 'latitude' => 'required|string',
-                'longitude' => 'required|string',
+                'longitude' => 'required|string'
             ]);
             
         } catch (ValidationException $e) {

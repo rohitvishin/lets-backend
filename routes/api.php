@@ -30,6 +30,7 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
 
     Route::get('/getUser', [UserController::class, 'index']);
 
+    //Without User's Email and Phone
     Route::post('/updateUser', [UserController::class, 'update']);
 
     Route::post('/updateUserLocation', [UserController::class, 'update_location_api']);
@@ -57,6 +58,10 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
     Route::post('/report', [ReportController::class, 'store']);
 
     Route::get('/getReports', [ReportController::class, 'show']);
+
+    Route::post('/updateUserFilter', [UserController::class, 'update_filter_api']);
+
+    Route::post('/updateUserLocation', [UserController::class, 'update_location_api']);
 
 });
 
