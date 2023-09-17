@@ -8,6 +8,7 @@ use App\Http\Controllers\API\PlansController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\SubscriptionController;
 use App\Http\Controllers\API\LetsController;
+use App\Http\Controllers\API\ReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,6 +49,14 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
     Route::post('/letsAcceptor', [LetsController::class, 'letsAcceptor']);
 
     Route::get('/getLets', [LetsController::class, 'getLetsDetails']);
+
+    Route::get('/getSubscriptions', [SubscriptionController::class, 'index']);
+
+    Route::get('/getLetsRequest', [LetsController::class, 'getLetsDetailRequests']);
+
+    Route::post('/report', [ReportController::class, 'store']);
+
+    Route::get('/getReports', [ReportController::class, 'show']);
 
 });
 

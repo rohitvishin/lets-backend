@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 
 use App\Helpers\Common;
+use App\Models\LetsModel;
 
 use function PHPUnit\Framework\isNull;
 
@@ -22,9 +23,29 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users_data = User::where('status', '1')->get();
+        $user = Auth::user();
 
-        return response()->json(['message' => 'Users Data', 'list' => $users_data], 200);
+        if (is_null($user)) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+        
+        $users = User::all(); // Assuming you have a User model
+
+        $usersWithLast3Activities = [];
+        
+        foreach ($users as $user) {
+            $last3Activities = LetsModel::where('user_id', $user->id)
+                ->orderBy('created_at', 'desc')
+                ->take(3)
+                ->get();
+        
+            $usersWithLast3Activities[] = [
+                'user' => $user,
+                'last_3_activities' => $last3Activities,
+            ];
+        }
+        
+        return response()->json(['message' => 'Users Data', 'user_list' => $usersWithLast3Activities], 200);
     }
 
     /**

@@ -169,9 +169,9 @@ class LetsController extends Controller
         $userData = User::find($user->id);
 
         $letsReceiverDetails = LetsReceiverLogModel::where('lets_id', $lets_id)
-    ->orderBy('created_at', 'desc')
-    ->select(['user_longitude', 'user_latitude', 'action', 'user_id', 'id', 'lets_id'])
-    ->get()->toArray();
+            ->orderBy('created_at', 'desc')
+            ->select(['user_longitude', 'user_latitude', 'action', 'user_id', 'id', 'lets_id'])
+            ->get()->toArray();
 
         // Common::print_r_custom($letsReceiverDetails);
 
@@ -242,5 +242,31 @@ class LetsController extends Controller
         $lets_data = LetsModel::where('user_id', $user->id)->where('status', '1')->get();
 
         return response()->json(['message' => 'Lets Data', 'list' => $lets_data], 200);
+    }
+
+    public function getLetsDetailRequests() {
+        
+        $user = Auth::user();
+
+        if (is_null($user)) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        $lets_data = LetsModel::where('user_id', $user->id)
+            ->where('status', '1')
+            ->get();
+
+        $lets_receiver_logs = [];
+
+        foreach ($lets_data as $lets) {
+            $lets_receiver_logs = LetsReceiverLogModel::where('lets_id', $lets->id)->get();
+        }
+
+        $last3Activities = LetsModel::where('user_id', $user->id)
+                ->orderBy('created_at', 'desc')
+                ->take(3)
+                ->get();
+
+        return response()->json(['message' => 'Lets Request Data', 'receiver_log' => $lets_receiver_logs, 'lets_data' => $lets_data, 'last_3_activities' => $last3Activities], 200);
     }
 }

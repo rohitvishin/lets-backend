@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\PlansModel;
 use App\Models\SubscriptionModel;
+use App\Models\User;
 
 class SubscriptionController extends Controller
 {
@@ -18,6 +19,21 @@ class SubscriptionController extends Controller
     public function index()
     {
         //
+        $user = Auth::user();
+
+        if (is_null($user)) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        $subscription = SubscriptionModel::where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        $plans = PlansModel::where('id', $subscription->plan_id)->get();
+
+        $user_details = User::where('id', $user->id)->get();
+
+        return response()->json(['message' => 'Subscription Data', 'plans_list' => $plans, 'subscription_list' => $subscription, 'update_user' => $user_details], 200);
     }
 
     /**
