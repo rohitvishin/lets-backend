@@ -9,6 +9,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 
 use Illuminate\Support\Facades\Mail;
@@ -65,6 +66,8 @@ class AuthController extends Controller
         $from_age_filter = isset($data['from_age_filter']) ? $data['from_age_filter'] : $data['age'] - 2;
         $to_age_filter = isset($data['to_age_filter']) ? $data['to_age_filter'] : $data['age'] + 2;
 
+        $referralCode = Str::random(6);
+
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
@@ -83,6 +86,7 @@ class AuthController extends Controller
             'radius_filter' => 500,
             'from_age_filter' => $data['age']-2,
             'to_age_filter' => $data['age']+2,
+            'referral_code' => $referralCode
         ]);
 
         $token = $user->createToken('apiToken')->plainTextToken;

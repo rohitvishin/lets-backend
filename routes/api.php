@@ -22,6 +22,7 @@ use App\Http\Controllers\API\LetsController;
 Route::get('/test',function(){
     return "Test";
 });
+
 Route::group(['middleware' => 'auth:sanctum'], function(){
 
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -29,6 +30,10 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
     Route::get('/getUser', [UserController::class, 'index']);
 
     Route::post('/updateUser', [UserController::class, 'update']);
+
+    Route::post('/updateUserLocation', [UserController::class, 'update_location_api']);
+
+    Route::post('/updateUserFilter', [UserController::class, 'update_filter_api']);
 
     Route::post('/resetPassword', [UserController::class, 'changePassword']);
 
@@ -41,6 +46,8 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
     Route::post('/letsCreator', [LetsController::class, 'letsCreator']);
 
     Route::post('/letsAcceptor', [LetsController::class, 'letsAcceptor']);
+
+    Route::get('/getLets', [LetsController::class, 'getLetsDetails']);
 
 });
 

@@ -168,26 +168,42 @@ class LetsController extends Controller
 
         $userData = User::find($user->id);
 
-        $letsReceiverDetails = LetsReceiverLogModel::where('user_id', $user->id)
-            ->where('lets_id', $lets_id)
-            ->orderBy('created_at', 'desc')
-            ->select(['user_longitude', 'user_latitude', 'action', 'user_id', 'id'])
-            ->first();
+        $letsReceiverDetails = LetsReceiverLogModel::where('lets_id', $lets_id)
+    ->orderBy('created_at', 'desc')
+    ->select(['user_longitude', 'user_latitude', 'action', 'user_id', 'id', 'lets_id'])
+    ->get()->toArray();
 
-        if ($letsReceiverDetails) {
-            // Update the 'action' attribute with the new value
-            $letsReceiverDetails->action = $action;
+        // Common::print_r_custom($letsReceiverDetails);
 
-            // Save the updated record
-            $letsReceiverDetails->save();
+        foreach($letsReceiverDetails as $details) {
+            if($details['action'] == 'accept') {
+                return response()->json(['message' => 'OOPS! You Just missed it'], 200);
+            }
+            else {
+                $letsReceiverDetails = LetsReceiverLogModel::where('user_id', $user->id)
+                    ->where('lets_id', $lets_id)
+                    ->orderBy('created_at', 'desc')
+                    ->select(['user_longitude', 'user_latitude', 'action', 'user_id', 'id'])
+                    ->first();
 
-            response()->json(['message' => 'Lets Receiver action updated successfully'], 200);
+                if ($letsReceiverDetails) {
+                    // Update the 'action' attribute with the new value
+                    $letsReceiverDetails->action = $action;
+
+                    // Save the updated record
+                    $letsReceiverDetails->save();
+
+                    response()->json(['message' => 'Lets Receiver action updated successfully'], 200);
+                }
+            }
         }
 
         $lets_details = LetsModel::where('id', $lets_id)->first();
 
         if ($lets_details) {
             // Update the attributes as needed
+            // $record = $letsReceiverDetailsMissed->first();
+
             $lets_details->acceptor_id = $user->id;
             $lets_details->acceptor_longitude = $letsReceiverDetails->user_longitude;
             $lets_details->acceptor_latitude = $letsReceiverDetails->user_latitude;
@@ -214,5 +230,17 @@ class LetsController extends Controller
         Common::logSystemActivity('User Accepted Lets', 'Lets Accepted', 'API');
 
         return response()->json(['message' => 'Lets Accepted Successfully'], 200);
+    }
+
+    public function getLetsDetails() {
+        $user = Auth::user();
+
+        if (is_null($user)) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        $lets_data = LetsModel::where('user_id', $user->id)->where('status', '1')->get();
+
+        return response()->json(['message' => 'Lets Data', 'list' => $lets_data], 200);
     }
 }
