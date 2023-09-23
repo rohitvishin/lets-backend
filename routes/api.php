@@ -63,6 +63,8 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
 
     Route::post('/updateUserLocation', [UserController::class, 'update_location_api']);
 
+    Route::post('/getUserDetails', [UserController::class, 'getUserDetails']);
+
 });
 
 Route::post('/signup', [AuthController::class, 'sign_up']);

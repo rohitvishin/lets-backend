@@ -275,4 +275,30 @@ class UserController extends Controller
         ];
         return response($res, 201);
     }
+
+    public function getUserDetails(Request $request)
+    {
+        $user = Auth::user();
+
+        if (is_null($user)) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        try {
+            $data = $request->validate([
+                'token' => 'required|string'
+            ]);
+            
+        } catch (ValidationException $e) {
+            return response()->json(['error' => $e->errors()], 400);
+        }
+
+        $userData = User::find($user->id);
+
+        $res = [
+            'user' => $userData,
+            'msg' => 'Users Details as per Token'
+        ];
+        return response($res, 201);
+    }
 }
