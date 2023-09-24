@@ -25,7 +25,10 @@ Route::get('/test',function(){
 });
 
 Route::group(['middleware' => 'auth:sanctum'], function(){
-
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    })->name('user');
+    Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::get('/getUser', [UserController::class, 'index']);
@@ -70,5 +73,3 @@ Route::post('/signup', [AuthController::class, 'sign_up']);
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::post('/verifyEmail', [AuthController::class, 'verify_email']);
-
-?>
