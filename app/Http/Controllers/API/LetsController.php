@@ -56,7 +56,8 @@ class LetsController extends Controller
         //
     }
 
-    public function letsCreator(Request $request) {
+    public function letsCreator(Request $request)
+    {
         $user = Auth::user();
 
         if (is_null($user)) {
@@ -74,7 +75,6 @@ class LetsController extends Controller
                 'creator_longitude' => 'string',
                 'creator_latitude' => 'string',
             ]);
-            
         } catch (ValidationException $e) {
             return response()->json(['error' => $e->errors()], 400);
         }
@@ -89,7 +89,7 @@ class LetsController extends Controller
 
         $usersNearBy = [];
 
-        foreach($all_users_in_same_location as $users_list) {
+        foreach ($all_users_in_same_location as $users_list) {
             $distance = Common::distance_meters($user_details->latitude, $user_details->longitude, $users_list['latitude'], $users_list['longitude'], $radius);
 
             if ($distance !== null && $distance <= $radius) {
@@ -108,12 +108,12 @@ class LetsController extends Controller
         if ($hasExpired) {
             return response()->json(['message' => 'Your Let\'s Subscription is Expired'], 401);
         } else {
-            if($subscription->lets_count !== 0) {
+            if ($subscription->lets_count !== 0) {
                 $event_name = $data['event_name'];
                 $duration = $data['duration'];
                 $creator_longitude = $data['creator_longitude'];
                 $creator_latitude = $data['creator_latitude'];
-    
+
                 $newLetsRecord = LetsModel::create([
                     'user_id' => $user->id,
                     'event_name' => $event_name,
@@ -122,7 +122,7 @@ class LetsController extends Controller
                     'creator_longitude' => $creator_longitude,
                     'creator_latitude' => $creator_latitude
                 ]);
-    
+
                 // Get the ID of the newly inserted record
                 $newLetsRecordId = $newLetsRecord->id;
 
@@ -135,22 +135,21 @@ class LetsController extends Controller
                         'user_latitude' => $userNearByList['latitude']
                     ]);
                 }
-    
+
                 // Decrement lets_count in SubscriptionModel
                 // SubscriptionModel::where('user_id', $user->id)->where('id', $subscription->id)->decrement('lets_count');
 
                 Common::logSystemActivity('User Created Lets', 'Lets Created', 'API');
-    
+
                 return response()->json(['message' => 'Lets Created Successfully'], 200);
-    
-    
-            }else {
+            } else {
                 return response()->json(['message' => 'You are out of limits to create New Lets'], 401);
             }
         }
     }
 
-    public function letsAcceptor(Request $request) {
+    public function letsAcceptor(Request $request)
+    {
         $user = Auth::user();
 
         if (is_null($user)) {
@@ -175,11 +174,10 @@ class LetsController extends Controller
 
         // Common::print_r_custom($letsReceiverDetails);
 
-        foreach($letsReceiverDetails as $details) {
-            if($details['action'] == 'accept') {
+        foreach ($letsReceiverDetails as $details) {
+            if ($details['action'] == 'accept') {
                 return response()->json(['message' => 'OOPS! You Just missed it'], 200);
-            }
-            else {
+            } else {
                 $letsReceiverDetails = LetsReceiverLogModel::where('user_id', $user->id)
                     ->where('lets_id', $lets_id)
                     ->orderBy('created_at', 'desc')
@@ -210,10 +208,10 @@ class LetsController extends Controller
             $lets_details->acceptor_selfie = $acceptor_selfie_path;
             $lets_details->handshake_status = '1';
             $lets_details->updated_at = date('Y-m-d H:i:s', time());
-        
+
             // Save the updated record
             $lets_details->save();
-        
+
             response()->json(['message' => 'Lets record updated successfully'], 200);
         } else {
             return response()->json(['message' => 'Lets record not found'], 404);
@@ -232,41 +230,46 @@ class LetsController extends Controller
         return response()->json(['message' => 'Lets Accepted Successfully'], 200);
     }
 
-    public function getLetsDetails() {
+    public function getLetsDetails()
+    {
         $user = Auth::user();
 
         if (is_null($user)) {
             return response()->json(['message' => 'User not found'], 404);
         }
 
-        $lets_data = LetsModel::where('user_id', $user->id)->where('status', '1')->get();
-
-        return response()->json(['message' => 'Lets Data', 'list' => $lets_data], 200);
+        $lets_data = LetsModel::where(['status' => '1', 'user_id' => $user->id])->latest()->first();
+        if (!empty($lets_data->acceptor_id))
+            $acceptor = User::select('name', 'age')->where('id', $lets_data->acceptor_id)->first();
+        else
+            $acceptor = [];
+        return response()->json(['message' => 'Lets Data', 'list' => $lets_data, 'acceptor' => $acceptor], 200);
     }
 
-    public function getLetsDetailRequests() {
-        
+    public function getLetsDetailRequests()
+    {
         $user = Auth::user();
 
         if (is_null($user)) {
             return response()->json(['message' => 'User not found'], 404);
         }
-
-        $lets_data = LetsModel::where('user_id', $user->id)
-            ->where('status', '1')
-            ->get();
-
-        $lets_receiver_logs = [];
-
-        foreach ($lets_data as $lets) {
-            $lets_receiver_logs = LetsReceiverLogModel::where('lets_id', $lets->id)->get();
-        }
-
-        $last3Activities = LetsModel::where('user_id', $user->id)
-                ->orderBy('created_at', 'desc')
+        // get incoming request
+        $lets_receiver_logs = LetsReceiverLogModel::select('lets_id')->where('user_id', $user->id)->latest()->get();
+        $letsArr = [];
+        foreach ($lets_receiver_logs as $lets) {
+            // get lets details of request
+            $letsEvt = LetsModel::select('user_id', 'event_name', 'duration')->where(['id' => $lets->lets_id, 'status' => '1'])
+                ->first();
+            $lets_data['lets'] = $letsEvt;
+            // get last 3 activities of lets shooter
+            $lets_data['activities'] = LetsModel::select('event_name')->where(['user_id' => $letsEvt->user_id, 'handshake_status' => 2])
+                ->latest()
                 ->take(3)
                 ->get();
-
-        return response()->json(['message' => 'Lets Request Data', 'receiver_log' => $lets_receiver_logs, 'lets_data' => $lets_data, 'last_3_activities' => $last3Activities], 200);
+            $lets_data['shooter'] = User::select('name', 'age', 'profile1', 'profile2')->where('id', $letsEvt->user_id)
+                ->first();
+            array_push($letsArr, $lets_data);
+        }
+        return response()->json(['message' => 'Lets Request Data', 'lets_data' => $letsArr], 200);
     }
 }
