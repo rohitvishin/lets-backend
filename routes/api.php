@@ -9,6 +9,7 @@ use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\SubscriptionController;
 use App\Http\Controllers\API\LetsController;
 use App\Http\Controllers\API\ReportController;
+use App\Http\Controllers\API\TransactionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -68,6 +69,10 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
 
     Route::post('/getUserDetails', [UserController::class, 'getUserDetails']);
 
+    Route::post('/forgotPassword', [UserController::class, 'forgotPassword']);
+
+    Route::post('/getOrderId', [TransactionController::class, 'getOrderId']);
+
 });
 
 Route::post('/signup', [AuthController::class, 'sign_up']);
@@ -75,3 +80,7 @@ Route::post('/signup', [AuthController::class, 'sign_up']);
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::post('/verifyEmail', [AuthController::class, 'verify_email']);
+
+Route::post('/forgot-password', [UserController::class, 'forgotPassword']);
+
+Route::post('reset', [UserController::class, 'reset']);

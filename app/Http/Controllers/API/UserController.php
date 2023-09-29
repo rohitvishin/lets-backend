@@ -8,13 +8,20 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 use App\Helpers\Common;
 use App\Models\LetsModel;
+use App\Models\PasswordReset;
 
 use function PHPUnit\Framework\isNull;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\URL;
 
 class UserController extends Controller
 {
@@ -300,5 +307,100 @@ class UserController extends Controller
             'msg' => 'Users Details as per Token'
         ];
         return response($res, 201);
+    }
+
+    public function forgotPassword(Request $request) {
+        $request->validate(['email' => 'required|email']);
+
+        try {
+           $user = User::where('email', $request->email)->get();
+
+            if(count($user) > 0) {
+                $token = Str::random(40);
+
+                $domain = URL::to('/');
+
+                $url = $domain . '/reset-password?token='.$token;
+
+                $data['url'] = $url;
+                $data['email'] = $request->email;
+                $data['title'] = 'Reset Your Password';
+                $data['body'] = 'Please click on below link to reset your password';
+
+                Mail::send('email/forgetPasswordMail', ['data' => $data], function($message) use($data) {
+                   $message->to($data['email'])->subject($data['title']); 
+                });
+
+                $datetime = Carbon::now()->format('Y-m-d H:i:s');
+
+                PasswordReset::updateorCreate(
+                    ['email' => $request->email],
+                    [
+                        'email' => $request->email,
+                        'token' => $token,
+                        'created_at' => $datetime
+                    ]
+                    );
+
+                    return response()->json(['success' => true, 'message' => 'Email sent successfully'], 200);
+            }
+            else {
+                return response()->json(['success' => false, 'message' => 'user not fund'], 400);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Unable to send reset link.', 'log' => $e->getMessage()], 400);
+        }
+    }
+
+    /**
+     * Load a view page to reset your password.
+     *
+     * @param  Request  $request
+     * @return view file
+     */
+    public function resetPasswordLoadPage(Request $request)
+    {
+        $request->validate(['token' => 'required']);
+
+        $resetData = PasswordReset::where('token', $request->token)->first();
+
+        if ($resetData) {
+            $email = $resetData->email;
+            
+            $user = User::where('email', $email)->first();
+
+            if ($user) {
+                // Now, you have the user object and can pass it to the view
+                return view('resetPassword', compact('user'));
+            } else {
+                return "<h1>User not found</h1>";
+            }
+        } else {
+            return "<h1>Password reset data not found</h1>";
+        }
+    }
+
+    /**
+     * Reset Password for user on given token
+     *
+     * @param  Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function resetPassword(Request $request)
+    {
+        $request->validate(['password' => 'required|string|min:6|confirmed']);
+
+        $user = User::find($request['user_id']);
+
+        if (!$user) {
+            return "<h1>User not found</h1>";
+        }
+
+        $user->password = Hash::make($request['password']);
+        $user->save();
+
+        PasswordReset::where('email', $user->email)->delete();
+
+        return "<h1>Password Saved Successfully</h1>";
     }
 }
