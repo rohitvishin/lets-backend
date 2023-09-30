@@ -73,6 +73,8 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
 
     Route::post('/getOrderId', [TransactionController::class, 'getOrderId']);
 
+    Route::post('/updatePaymentStatus', [TransactionController::class, 'updatePaymentStatus']);
+
 });
 
 Route::post('/signup', [AuthController::class, 'sign_up']);

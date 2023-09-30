@@ -215,7 +215,10 @@ class UserController extends Controller
                 'state' => 'required|string',
                 'city' => 'required|string',
                 'latitude' => 'required|string',
-                'longitude' => 'required|string'
+                'longitude' => 'required|string',
+                'device_id' => 'required|string',
+                'device_type' => 'required|string',
+                'device_name' => 'required|string',
             ]);
             
         } catch (ValidationException $e) {
@@ -229,6 +232,9 @@ class UserController extends Controller
         $userData->city = $data['city'];
         $userData->longitude = $data['longitude'];
         $userData->latitude = $data['latitude'];
+        $userData->device_id = $data['device_id'];
+        $userData->device_type = $data['device_type'];
+        $userData->device_name = $data['device_name'];
 
         // Save the updated user
         $userData->save();
