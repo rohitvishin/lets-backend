@@ -46,10 +46,9 @@ Route::prefix('admin')->group(function () {
     Route::post('/updateUserStatus',[AdminController::class,'updateUserStatus']);
     Route::post('/addPackage',[AdminController::class,'addPackage']);
     Route::post('/deletePackage',[AdminController::class,'deletePackage']);
-    Route::post('/addUserPackage',[Controller::class,'addUserPackage']);
-    Route::post('/addUser',[Controller::class,'addUser']);
-    Route::post('/addUserPayment',[Controller::class,'addUserPayment']);
-    Route::post('/deleteUser',[Controller::class,'deleteUser']);
+    Route::post('/deleteUser',[AdminController::class,'deleteUser']);
+
+    Route::post('/changePwd',[AdminController::class,'changePwd']);
 
     Route::get('/adminLogout',[AdminController::class,'adminLogout'])->name('adminLogout');
 });

@@ -32,6 +32,7 @@ class AuthController extends Controller
                 'profile1' => 'image|mimes:jpeg,png,jpg|max:2048',
                 'profile2' => 'image|mimes:jpeg,png,jpg|max:2048',
                 'selfie' => 'image|mimes:jpeg,png,jpg|max:2048',
+                'user_ref_id' => 'numeric',
                 // 'state' => 'required|string',
                 // 'city' => 'required|string',
                 // 'gender_filter' => 'required|string',
@@ -86,7 +87,8 @@ class AuthController extends Controller
             'radius_filter' => 500,
             'from_age_filter' => $data['age']-2,
             'to_age_filter' => $data['age']+2,
-            'referral_code' => $referralCode
+            'referral_code' => $referralCode,
+            'ref_id' => $data['user_ref_id']
         ]);
 
         $token = $user->createToken('apiToken')->plainTextToken;

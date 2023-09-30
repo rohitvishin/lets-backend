@@ -194,6 +194,26 @@ class AdminController extends Controller
     return view('admin.manageUser',$data);
 }
 
+public function changePwd(Request $request){
+  $params=$request->validate([
+    'new_pwd' => 'required|string',
+    'confirm_pwd' => 'required|string|same:new_pwd'
+  ]);
+  Common::print_r_custom(Auth::check());
+  $update=Admin::where('id',Auth::user()->id)->update(['password'=>hash::make($params['new_pwd'])]);
+  if($update){
+    return response()->json([
+      'message'=>'Password Updated',
+      'type'=>'success'
+    ]);  
+  }else{
+    return response()->json([
+      'message' => 'Opps! Operation failed',
+      'type'=>'failed'
+    ], 401);
+  }
+}
+
   public function adminLogout(){
     Auth::logout();
     return redirect()->route('adminLogin');
