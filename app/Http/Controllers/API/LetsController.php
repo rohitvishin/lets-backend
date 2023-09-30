@@ -226,20 +226,25 @@ class LetsController extends Controller
         return response()->json(['message' => 'Lets Accepted Successfully'], 200);
     }
 
-    public function getLetsDetails()
-    {
+    public function getLetsDetails() {
         $user = Auth::user();
 
         if (is_null($user)) {
             return response()->json(['message' => 'User not found'], 404);
         }
-
-        $lets_data = LetsModel::where(['status' => '1', 'user_id' => $user->id])->latest()->first();
-        if (!empty($lets_data->acceptor_id))
-            $acceptor = User::select('name', 'age')->where('id', $lets_data->acceptor_id)->first();
+        $creator=[
+            'name'=>$user['name'],
+            'age'=>$user['age'],
+            'profile'=>$user['profile1'],
+            'longitude'=>$user['longitude'],
+            'latitude'=>$user['latitude'],
+            ];
+        $lets_data = LetsModel::where(['status'=> '1','user_id'=>$user->id])->latest()->first();
+        if(!empty($lets_data->acceptor_id))
+            $acceptor=User::select('name','age','longitude','latitude')->where('id',$lets_data->acceptor_id)->first();
         else
-            $acceptor = [];
-        return response()->json(['message' => 'Lets Data', 'list' => $lets_data, 'acceptor' => $acceptor], 200);
+            $acceptor=[];
+        return response()->json(['message' => 'Lets Data', 'list' => $lets_data,'acceptor'=>$acceptor,'creator'=>$creator], 200);
     }
 
     public function getLetsDetailRequests()
