@@ -32,7 +32,7 @@ class AuthController extends Controller
                 'profile1' => 'image|mimes:jpeg,png,jpg|max:2048',
                 'profile2' => 'image|mimes:jpeg,png,jpg|max:2048',
                 'selfie' => 'image|mimes:jpeg,png,jpg|max:2048',
-                'user_ref_id' => 'numeric',
+                'ref_code' => 'string',
                 // 'state' => 'required|string',
                 // 'city' => 'required|string',
                 // 'gender_filter' => 'required|string',
@@ -62,6 +62,8 @@ class AuthController extends Controller
             $selfie_path = NULL;
         }
 
+        $user_id = User::where('referral_code', $data['ref_code'])->value('id');
+
         // $gender_filter = isset($data['gender_filter']) ? $data['gender_filter'] : null;
         $radius_filter = isset($data['radius_filter']) ? $data['radius_filter'] : 200;
         $from_age_filter = isset($data['from_age_filter']) ? $data['from_age_filter'] : $data['age'] - 2;
@@ -88,7 +90,7 @@ class AuthController extends Controller
             'from_age_filter' => $data['age']-2,
             'to_age_filter' => $data['age']+2,
             'referral_code' => $referralCode,
-            'ref_id' => $data['user_ref_id']
+            'ref_id' => $user_id
         ]);
 
         $token = $user->createToken('apiToken')->plainTextToken;
