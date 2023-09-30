@@ -11,11 +11,11 @@
     <meta name="description" content="" />
     @include('include.header')
     <!-- Page -->
-    <link rel="stylesheet" href="{{ asset('public/assets/vendor/css/pages/page-auth.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/page-auth.css') }}" />
 
 </head>
 
-<body background="{{ asset('public/assets/img/backgrounds/27.jpg') }}">
+<body background="{{ asset('assets/img/backgrounds/27.jpg') }}">
     <!-- Content -->
 
     <div class="container-xxl">

@@ -1,14 +1,14 @@
 <!-- build:js assets/vendor/js/core.js -->
-<script src={{asset("public/assets/vendor/libs/jquery/jquery.js")}}></script>
-<script src={{asset("public/assets/vendor/libs/popper/popper.js")}}></script>
-<script src={{asset("public/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js")}}></script>
-<script src={{asset("public/assets/vendor/js/menu.js")}}></script>
+<script src={{asset("assets/vendor/libs/jquery/jquery.js")}}></script>
+<script src={{asset("assets/vendor/libs/popper/popper.js")}}></script>
+<script src={{asset("assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js")}}></script>
+<script src={{asset("assets/vendor/js/menu.js")}}></script>
 <!-- endbuild -->
 <!-- Vendors JS -->
 <!-- Main JS -->
-<script src={{asset("public/assets/js/main.js")}}></script>
+<script src={{asset("assets/js/main.js")}}></script>
 <!-- Page JS -->
-<script src={{asset("public/assets/js/dashboards-analytics.js")}}></script>
+<script src={{asset("assets/js/dashboards-analytics.js")}}></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 <script>
     function show_Toaster(message, type) {

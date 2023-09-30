@@ -117,7 +117,7 @@
                                         <div class="card">
                                             <div class="card-body">
                                                 <span class="d-block mb-1 avatar-initial rounded text-primary"><i
-                                                        class="menu-icon tf-icons bx bx-user"></i>Total Clients</span>
+                                                        class="menu-icon tf-icons bx bx-user"></i>Total Users</span>
                                                 <h3 class="card-title text-nowrap mb-2">{{ $usercount ?: 0 }}</h3>
                                             </div>
                                         </div>
@@ -135,7 +135,25 @@
                                         <div class="card">
                                             <div class="card-body">
                                                 <span class="d-block mb-1 avatar-initial rounded text-primary"><i
-                                                        class="menu-icon tf-icons bx bx-user"></i>Total Sale</span>
+                                                        class="menu-icon tf-icons bx bx-user"></i>Total Subscriptions</span>
+                                                <h3 class="card-title text-nowrap mb-2">{{ $subscriptioncount ?: 0 }}</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-3 mb-4">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <span class="d-block mb-1 avatar-initial rounded text-primary"><i
+                                                        class="menu-icon tf-icons bx bx-user"></i>Total Payments</span>
+                                                <h3 class="card-title text-nowrap mb-2">{{ $paymentcount ?: 0 }}</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-3 mb-4">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <span class="d-block mb-1 avatar-initial rounded text-primary"><i
+                                                        class="menu-icon tf-icons bx bx-user"></i>Total Lets Shoot</span>
                                                 <h3 class="card-title text-nowrap mb-2">{{ $paymentcount ?: 0 }}</h3>
                                             </div>
                                         </div>
@@ -176,60 +194,18 @@
                                                     <td>{{ $i++; }}</td>
                                                     <td>{{ $singledata['name'] }} </td>
                                                     <td>{{ $singledata['email'] }}</td>
-                                                    <td>{{ $singledata['mobile'] }}</td>
-                                                    <td>{{ $singledata['package']['package_name'] }}</td>
-                                                    <td>{{ date('d M, Y', strtotime($singledata['expiry_date'])) }}</td>
+                                                    <td>{{ $singledata['phone'] }}</td>
+                                                    <td>{{ $singledata['plan_name'] }}</td>
+                                                    <td>{{ date('d M, Y', strtotime($singledata['subscription']['end_date'])) }}</td>
                                                     <td>
                                                         <label class="switch">
-                                                            <input type="checkbox" id="status-{{ $singledata['key'] }}"
+                                                            <input type="checkbox" id="status-{{ $singledata['id'] }}"
                                                                 onclick="updateUserStatus(this)"
-                                                                data-key="{{ $singledata['key'] }}"
+                                                                data-key="{{ $singledata['id'] }}"
                                                                 data-value="{{ $singledata['status'] == 1 ? '0' : '1' }}"
                                                                 {{ $singledata['status'] == 1 ? 'checked' : '' }}>
                                                             <span class="slider"></span>
                                                         </label>
-                                                    </td>
-                                                </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <br>
-
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="card">
-                                    <div style="display: flex;">
-                                        <h5 class="card-header">Support Tickets</h5>
-                                    </div>
-                                    <div class="table table-responsive">
-                                        <table id="table_id1" class="display">
-                                            <thead>
-                                                <tr>
-                                                    <th>Ticket ID</th>
-                                                    <th>Username</th>
-                                                    <th>Query</th>
-                                                    <th>Reply</th>
-                                                    <th>Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody class="table-border-bottom-0">
-                                                @php($i = 1)
-                                                @foreach ($ticket as $singleticket)
-                                                <tr>
-                                                    <td>{{ $singleticket['id'] }}</td>
-                                                    <td><i class="fab fa-angular fa-lg text-danger me-3"></i>
-                                                        {{ $singleticket['user']['name'] }} </td>
-                                                    <td>{{ $singleticket['ticket'] }}</td>
-                                                    <td>{{ $singleticket['reply'] }}</td>
-                                                    <td>
-                                                        <a type="button"
-                                                            onclick="supportReply('{{$singleticket['id']}}')"
-                                                            title="Client Documents"><i
-                                                                class="menu-icon tf-icons bx bx-edit"></i></a>
                                                     </td>
                                                 </tr>
                                                 @endforeach
@@ -250,38 +226,6 @@
                 <!-- Content wrapper -->
             </div>
             <!-- / Layout page -->
-        </div>
-
-        <!-- Overlay -->
-        <div class="layout-overlay layout-menu-toggle"></div>
-
-        <!-- Support Reply Add Modal -->
-        <div class="modal fade" id="supportReply" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <form id="supportReplyForm">
-                        @csrf
-                        <input type="hidden" name="id" id="id">
-                        <div class="modal-body">
-                            <div class="row">
-
-                                <div class="mb-3 col-md-12">
-                                    <label for="email" class="form-label">Add Reply</label>
-                                    <textarea class="form-control" id="reply" name="reply"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary" id="process" name="process"
-                                value="update">Save
-                                changes</button>
-                            <button type="button" class="btn btn-outline-secondary" onclick="closeModal()">
-                                Close
-                            </button>
-                        </div>
-                </div>
-                </form>
-            </div>
         </div>
     </div>
     <!-- / Layout wrapper -->
@@ -304,7 +248,6 @@
     <script>
     $(document).ready(function() {
         $('#table_id').DataTable();
-        $('#table_id1').DataTable();
     });
 
     function show_Toaster(message, type) {

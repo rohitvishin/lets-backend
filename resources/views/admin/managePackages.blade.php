@@ -7,7 +7,7 @@
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-    <title>Manage Clients</title>
+    <title>Manage Packages</title>
 
     <meta name="description" content="" />
 
@@ -59,8 +59,7 @@
                                             <th>Package Name</th>
                                             <th>Duration</th>
                                             <th>Duration Type</th>
-                                            <th>Clients Limit</th>
-                                            <th>Storage Limit</th>
+                                            <th>Lets Limit</th>
                                             <th>Amount</th>
                                             <th>Created at</th>
                                             <th>Actions</th>
@@ -73,18 +72,17 @@
                                             <td>{{ $i++; }}</td>
                                             <td><i class="fab fa-angular fa-lg text-danger me-3"></i>
                                                 {{ $singledata->package_name}} </td>
-                                            <td>{{ $singledata->duration}}</td>
-                                            <td>{{ $singledata->duration_type}}</td>
-                                            <td>{{ $singledata->client_limit }}</td>
-                                            <td>{{ $singledata->storage_limit }}</td>
+                                            <td>{{ $singledata->validity}}</td>
+                                            <td>{{ $singledata->validity_type}}</td>
+                                            <td>{{ $singledata->lets_count }}</td>
                                             <td>{{ $singledata->amount }}</td>
-                                            <td>{{ date('D, M Y',strtotime($singledata->created_at)) }}</td>
+                                            <td>{{ date('D, d M Y',strtotime($singledata->created_at)) }}</td>
                                             <td>
                                                 <a type="button" onclick="editPackage({{$singledata}})"
                                                     title="Edit Client Details"><i
                                                         class="menu-icon tf-icons bx bx-edit"></i></a>
                                                 <a type="button"
-                                                    onclick="deletePackage('{{$singledata->id}}', '{{$singledata->client_id}}')"
+                                                    onclick="deletePackage('{{$singledata->id}}')"
                                                     title="Delete Client Data"><i
                                                         class="menu-icon tf-icons bx bx-trash"></i></a>
                                             </td>
@@ -130,33 +128,36 @@
                             </div>
                             <div class="mb-3 col-md-6">
                                 <label for="email" class="form-label">Duration Number</label>
-                                <input class="form-control" type="text" id="duration" name="duration"
+                                <input class="form-control" type="text" id="validity" name="validity"
                                     placeholder="Enter Duration Number" />
                             </div>
 
                             <div class="mb-3 col-md-6">
                                 <label for="email" class="form-label">Duration Type</label>
-                                <select name="duration_type" required class="form-control">
+                                <select name="validity_type" required class="form-control">
                                     <option value="-1" selected>Select Duration Type</option>
-                                    <option value="0">Days</option>
-                                    <option value="1">Month</option>
-                                    <option value="2">Year</option>
+                                    <option value="Days">Days</option>
+                                    <option value="Month">Month</option>
+                                    <option value="Year">Year</option>
                                 </select>
                             </div>
                             <div class="mb-3 col-md-6">
-                                <label for="email" class="form-label">Client Limit</label>
-                                <input class="form-control" type="number" id="client_limit" name="client_limit"
-                                    placeholder="Enter Client Limit" />
-                            </div>
-                            <div class="mb-3 col-md-6">
-                                <label for="email" class="form-label">Storage in MB</label>
-                                <input type="text" class="form-control" type="text" id="storage_limit"
-                                    name="storage_limit" placeholder="Enter Storage Limit">
+                                <label for="email" class="form-label">Lets Limit</label>
+                                <input class="form-control" type="number" id="lets_count" name="lets_count"
+                                    placeholder="Enter Lets Limit" />
                             </div>
                             <div class="mb-3 col-md-6">
                                 <label for="email" class="form-label">Package Amount</label>
                                 <input type="text" class="form-control" type="text" id="amount" name="amount"
                                     placeholder="Enter Package Amount">
+                            </div>
+                            <div class="mb-3 col-md-6">
+                                <label for="isCarryForward" class="form-label">Carry Forward</label>
+                                <select name="isCarryForward" required class="form-control">
+                                    <option value="-1" selected>Select Carry Forward</option>
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -244,10 +245,9 @@
         console.log(data.valid_till);
         $('#id').val(data.id)
         $('#package_name').val(data.package_name)
-        $('#duration').val(data.duration)
-        $('#duration_type').val(data.duration_type)
-        $('#client_limit').val(data.client_limit)
-        $('#storage_limit').val(data.storage_limit)
+        $('#duration').val(data.validity)
+        $('#duration_type').val(data.validity_type)
+        $('#client_limit').val(data.lets_count)
         $('#amount').val(data.amount)
         $('#process').val('update')
         $('#basicModal').modal('show');

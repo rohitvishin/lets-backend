@@ -59,7 +59,7 @@
         <li class="menu-item">
             <a href="{{url('/admin/allSupport')}}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-phone"></i>
-                <div data-i18n="Analytics">Support</div>
+                <div data-i18n="Analytics">Reports</div>
             </a>
         </li>
 

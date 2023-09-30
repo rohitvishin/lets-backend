@@ -10,5 +10,5 @@ class PlansModel extends Model
     use HasFactory;
 
     protected $table = 'plans';
-    protected $fillable =['name', 'amount', 'user_id', 'created_at', 'updated_at'];
+    protected $fillable =['package_name', 'amount', 'lets_count', 'validity', 'validity_type', 'isCarryforward', 'isReferralBonus', 'isRadiusChange', 'isGenderSelect', 'isAgeSelect', 'status', 'created_at', 'updated_at'];
 }

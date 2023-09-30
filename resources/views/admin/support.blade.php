@@ -7,7 +7,7 @@
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-    <title>Manage Clients</title>
+    <title>Manage Reports</title>
 
     <meta name="description" content="" />
 
@@ -106,10 +106,10 @@
                     <!-- Content -->
 
                     <div class="container-xxl flex-grow-1 container-p-y">
-                        <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Users /</span> Manage</h4>
+                        <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Reports</span></h4>
                         <div class="card">
                             <div style="display: flex;">
-                                <h5 class="card-header">Support Tickets</h5>
+                                <h5 class="card-header">Reports</h5>
                             </div>
                             <div class="card-body">
                                 <div class="table table-responsive">
@@ -118,9 +118,8 @@
                                             <tr>
                                                 <th>Ticket ID</th>
                                                 <th>Username</th>
-                                                <th>Query</th>
-                                                <th>Reply</th>
-                                                <th>Action</th>
+                                                <th>Email</th>
+                                                <th>Reason</th>
                                             </tr>
                                         </thead>
                                         <tbody class="table-border-bottom-0">
@@ -129,14 +128,9 @@
                                             <tr>
                                                 <td>{{ $singleticket['id'] }}</td>
                                                 <td><i class="fab fa-angular fa-lg text-danger me-3"></i>
-                                                    {{ $singleticket['user']['name'] }} </td>
-                                                <td>{{ $singleticket['ticket'] }}</td>
-                                                <td>{{ $singleticket['reply'] }}</td>
-                                                <td>
-                                                    <a type="button" onclick="supportReply('{{$singleticket['id']}}')"
-                                                        title="Client Documents"><i
-                                                            class="menu-icon tf-icons bx bx-edit"></i></a>
-                                                </td>
+                                                    {{ $singleticket['name'] }} </td>
+                                                   <td> {{ $singleticket['email'] }} </td>
+                                                <td>{{ $singleticket['reason'] }}</td>
                                             </tr>
                                             @endforeach
                                         </tbody>

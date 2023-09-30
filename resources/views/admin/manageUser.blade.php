@@ -7,7 +7,7 @@
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-    <title>Manage Clients</title>
+    <title>Manage Users</title>
 
     <meta name="description" content="" />
 
@@ -110,11 +110,6 @@
                         <div class="card">
                             <div style="display: flex;">
                                 <h5 class="card-header">Manage Users</h5>
-                                <h5 class="card-header">
-                                    <a type="button" class="btn btn-outline-secondary btn-small text-red"
-                                        onclick="showAddUser()" title="Edit Client Details">Add
-                                        New</a>
-                                </h5>
                             </div>
                             <div class="table table-responsive">
                                 <table id="table_id" class="display">
@@ -127,7 +122,6 @@
                                             <th>Package</th>
                                             <th>Expiry Date</th>
                                             <th>Status</th>
-                                            <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody class="table-border-bottom-0">
@@ -137,29 +131,18 @@
                                             <td>{{ $i++; }}</td>
                                             <td>{{ $singledata['name'] }} </td>
                                             <td>{{ $singledata['email'] }}</td>
-                                            <td>{{ $singledata['mobile'] }}</td>
-                                            <td>{{ $singledata['package']['package_name'] }}</td>
-                                            <td>{{ date('d M, Y', strtotime($singledata['expiry_date'])) }}</td>
+                                            <td>{{ $singledata['phone'] }}</td>
+                                            <td>{{ $singledata['plan_name'] }}</td>
+                                            <td>{{ date('d M, Y', strtotime($singledata['subscription']['end_date'])) }}</td>
                                             <td>
                                                 <label class="switch">
-                                                    <input type="checkbox" id="status-{{ $singledata['key'] }}"
+                                                    <input type="checkbox" id="status-{{ $singledata['id'] }}"
                                                         onclick="updateUserStatus(this)"
-                                                        data-key="{{ $singledata['key'] }}"
+                                                        data-key="{{ $singledata['id'] }}"
                                                         data-value="{{ $singledata['status'] == 1 ? '0' : '1' }}"
                                                         {{ $singledata['status'] == 1 ? 'checked' : '' }}>
                                                     <span class="slider"></span>
                                                 </label>
-                                            </td>
-                                            <td>
-                                                <a type="button" onclick="showAddPayment('{{$singledata['key']}}')"
-                                                    title="Add New Package"><i
-                                                        class="menu-icon tf-icons bx bx-file"></i></a>
-                                                <a type="button" onclick="editUser({{ json_encode($singledata) }})"
-                                                    title="Edit Client Details"><i
-                                                        class="menu-icon tf-icons bx bx-edit"></i></a>
-                                                <a type="button" onclick="deleteUser('{{$singledata['key']}}')"
-                                                    title="Delete Client Data"><i
-                                                        class="menu-icon tf-icons bx bx-trash"></i></a>
                                             </td>
                                         </tr>
                                         @endforeach
@@ -181,166 +164,6 @@
         <div class="layout-overlay layout-menu-toggle"></div>
     </div>
     <!-- / Layout wrapper -->
-
-    <div class="modal fade" id="basicModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <form id="editUser">
-                    @csrf
-                    <input type="hidden" name="id" id="id">
-                    <input type="hidden" name="key" id="key">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel1">User Details</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-
-                        {{-- contact details --}}
-                        <div class="row">
-                            <div class="mb-3 col-md-6">
-                                <label for="firstName" class="form-label">Company name</label>
-                                <input class="form-control" type="text" id="name" name="name"
-                                    placeholder="Enter Company name" autofocus />
-                            </div>
-                            <div class="mb-3 col-md-6">
-                                <label for="email" class="form-label">Contact Person Name</label>
-                                <input class="form-control" type="text" id="contact_person" name="contact_person"
-                                    placeholder="Enter Contact Person Name" />
-                            </div>
-                            <div class="mb-3 col-md-6">
-                                <label for="email" class="form-label">Email</label>
-                                <input class="form-control" type="text" id="email" name="email"
-                                    placeholder="Enter Email Id" />
-                            </div>
-                            <div class="mb-3 col-md-6">
-                                <label for="email" class="form-label">Mobile Number</label>
-                                <input class="form-control" type="text" id="mobile" name="mobile"
-                                    placeholder="Enter Mobile Number" />
-                            </div>
-                            <div class="mb-3 col-md-6">
-                                <label for="email" class="form-label">Password</label>
-                                <input class="form-control" type="text" id="dcrypt_password" name="dcrypt_password"
-                                    placeholder="Enter Password" />
-                            </div>
-                            <div class="mb-3 col-md-12">
-                                <label for="email" class="form-label">Address</label>
-                                <textarea class="form-control" type="text" id="address" name="address"
-                                    placeholder="Enter Address"></textarea>
-                            </div>
-                            <div class="mb-3 col-md-6">
-                                <label for="email" class="form-label">Select Package</label>
-                                <select name="package_id" id="package_id" class="form-control">
-                                    <option value="0">Select Package</option>
-                                    @if(count($packages) > 0)
-                                    @foreach($packages as $singlePackage)
-                                    <option value="{{ $singlePackage['id'] }}">{{ $singlePackage['package_name'] }}
-                                    </option>
-                                    @endforeach
-                                    @endif
-
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary" id="process" name="process" value="update">Save
-                            changes</button>
-                    </div>
-            </div>
-            </form>
-        </div>
-    </div>
-
-
-    <div class="modal fade" id="basicModal2" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <form id="addUserPackage">
-                    @csrf
-                    <input type="hidden" name="id" id="id">
-                    <input type="hidden" class="key" name="key" id="key">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel1">User Package Details</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-
-                        {{-- Add Package --}}
-                        <div class="row">
-                            <div class="mb-3 col-md-6">
-                                <label for="email" class="form-label">Select Package</label>
-                                <select name="package_id" id="package_id" class="form-control">
-                                    <option value="0">Select Package</option>
-                                    @if(count($packages) > 0)
-                                    @foreach($packages as $singlePackage)
-                                    <option value="{{ $singlePackage['id'] }}">{{ $singlePackage['package_name'] }}
-                                    </option>
-                                    @endforeach
-                                    @endif
-
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary" id="process" name="process" value="update">Save
-                            changes</button>
-                        <button type="button" class="btn btn-outline-secondary" onclick="closeModal()">
-                            Close
-                        </button>
-                    </div>
-            </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Payment Add Modal -->
-    <div class="modal fade" id="basicModal3" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <form id="addUserPayment">
-                    @csrf
-                    <input type="hidden" name="id" id="id">
-                    <input type="hidden" class="key" name="key" id="key">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel1">User Payment Details</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-
-                        {{-- Add Package --}}
-                        <div class="row">
-                            <div class="mb-3 col-md-6">
-                                <label for="email" class="form-label">Select Package</label>
-                                <select name="package_id" id="package_id" class="form-control">
-                                    <option value="0">Select Package</option>
-                                    @if(count($packages) > 0)
-                                    @foreach($packages as $singlePackage)
-                                    <option value="{{ $singlePackage['id'] }}">{{ $singlePackage['package_name'] }}
-                                    </option>
-                                    @endforeach
-                                    @endif
-
-                                </select>
-                            </div>
-                            <div class="mb-3 col-md-6">
-                                <label for="email" class="form-label">Select Payment Date</label>
-                                <input type="date" name="payment_date" id="payment_date" class="form-control">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary" id="process" name="process" value="update">Save
-                            changes</button>
-                        <button type="button" class="btn btn-outline-secondary" onclick="closeModal()">
-                            Close
-                        </button>
-                    </div>
-            </div>
-            </form>
-        </div>
-    </div>
-
 
     </div>
 
@@ -409,93 +232,6 @@
 
     $(document).ready(function() {
         $('#table_id').DataTable();
-    });
-
-
-    function editUser(data) {
-        $('#id').val(data.id)
-        $('#key').val(data.key)
-        $('#name').val(data.name)
-        $('#contact_person').val(data.contact_person)
-        $('#email').val(data.email)
-        $('#mobile').val(data.mobile)
-        $('#address').val(data.address)
-        $('#dcrypt_password').val(data.dcrypt_password)
-        $("#package_id").val(data.package_id);
-        $('#process').val('update')
-        $('#basicModal').modal('show');
-    }
-
-    function showAddUser() {
-        document.getElementById("editUser").reset();
-        $('#process').val('add')
-        $('#basicModal').modal('show');
-    }
-
-    function showAddPackage(key) {
-        document.getElementById("addUserPackage").reset();
-        $('#process').val('add')
-        $('.key').val(key)
-        $('#basicModal2').modal('show');
-    }
-
-    function showAddPayment(key) {
-        document.getElementById("addUserPayment").reset();
-        $('#process').val('add')
-        $('.key').val(key)
-        $('#basicModal3').modal('show');
-    }
-
-
-    $('#editUser').submit(function(e) {
-        e.preventDefault();
-        var formdata = new FormData(this);
-        formdata.append('process', $('#process').val());
-        axios.post(`${url}/admin/addUser`, formdata).then(function(response) {
-            // handle success
-            show_Toaster(response.data.message, response.data.type)
-            if (response.data.type === 'success') {
-                setTimeout(() => {
-                    window.location.href = `${url}/admin/allUsers`;
-                }, 500);
-            }
-        }).catch(function(err) {
-            show_Toaster(err.response.data.message, 'error')
-        })
-    });
-
-    $('#addUserPackage').submit(function(e) {
-        e.preventDefault();
-        var formdata = new FormData(this);
-        formdata.append('process', $('#process').val());
-        axios.post(`${url}/admin/addUserPackage`, formdata).then(function(response) {
-            // handle success
-            show_Toaster(response.data.message, response.data.type)
-            if (response.data.type === 'success') {
-                setTimeout(() => {
-                    window.location.href = `${url}/admin/allUsers`;
-                }, 500);
-            }
-        }).catch(function(err) {
-            show_Toaster(err.response.data.message, 'error')
-        })
-    });
-
-    $('#addUserPayment').submit(function(e) {
-        e.preventDefault();
-        var formdata = new FormData(this);
-        formdata.append('process', $('#process').val());
-        axios.post(`${url}/admin/addUserPayment`, formdata).then(function(response) {
-            // handle success
-            show_Toaster(response.data.message, response.data.type)
-            if (response.data.type === 'success') {
-                setTimeout(() => {
-                    window.location.href = `${url}/admin/allUsers`;
-                }, 500);
-            }
-        }).catch(function(err) {
-            show_Toaster(err.response.data.message, 'error')
-        })
     });
 
     function deleteUser(key) {
