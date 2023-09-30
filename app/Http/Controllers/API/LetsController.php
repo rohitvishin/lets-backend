@@ -13,6 +13,7 @@ use App\Models\SubscriptionModel;
 use App\Models\LetsModel;
 use App\Models\LetsReceiverLogModel;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 
 class LetsController extends Controller
 {
@@ -86,7 +87,6 @@ class LetsController extends Controller
             ->whereBetween('age', [$user_details->from_age_filter, $user_details->to_age_filter])
             ->get()->toArray();
 
-
         $usersNearBy = [];
 
         foreach ($all_users_in_same_location as $users_list) {
@@ -159,40 +159,36 @@ class LetsController extends Controller
         $lets_id = $request->lets_id;
         $action = $request->action;
 
-        if ($request->hasFile('acceptor_selfie')) {
-            $acceptor_selfie_path = $request->file('acceptor_selfie')->store('image', 'public');
+        if ($request->has('acceptor_selfie')) {
+            $base64Image = $request->input('acceptor_selfie');
+            list($type, $base64Data) = explode(';', $base64Image);
+            list(, $base64Data) = explode(',', $base64Data);
+            $imageData = base64_decode($base64Data);
+            $extension = explode('/', explode(':', substr($base64Image, 0, strpos($base64Image, ';')))[1])[1];
+            $fileName = time() . '.' . $extension;
+            $fullPath = Storage::disk('public')->put('image/' . $fileName, $imageData);
+            $acceptor_selfie_path = "image/".$fileName;
         } else {
             $acceptor_selfie_path = NULL;
         }
 
-        $userData = User::find($user->id);
-
-        $letsReceiverDetails = LetsReceiverLogModel::where('lets_id', $lets_id)
-            ->orderBy('created_at', 'desc')
+        $letsReceiverDetails = LetsReceiverLogModel::where(['lets_id' => $lets_id, 'user_id' => $user->id])
             ->select(['user_longitude', 'user_latitude', 'action', 'user_id', 'id', 'lets_id'])
-            ->get()->toArray();
+            ->first();
 
         // Common::print_r_custom($letsReceiverDetails);
 
-        foreach ($letsReceiverDetails as $details) {
-            if ($details['action'] == 'accept') {
-                return response()->json(['message' => 'OOPS! You Just missed it'], 200);
-            } else {
-                $letsReceiverDetails = LetsReceiverLogModel::where('user_id', $user->id)
-                    ->where('lets_id', $lets_id)
-                    ->orderBy('created_at', 'desc')
-                    ->select(['user_longitude', 'user_latitude', 'action', 'user_id', 'id'])
-                    ->first();
+        if ($letsReceiverDetails['action'] == 'accept') {
+            return response()->json(['message' => 'OOPS! You Just missed it'], 200);
+        } else {
+            if ($letsReceiverDetails) {
+                // Update the 'action' attribute with the new value
+                $letsReceiverDetails->action = $action;
 
-                if ($letsReceiverDetails) {
-                    // Update the 'action' attribute with the new value
-                    $letsReceiverDetails->action = $action;
+                // Save the updated record
+                $letsReceiverDetails->save();
 
-                    // Save the updated record
-                    $letsReceiverDetails->save();
-
-                    response()->json(['message' => 'Lets Receiver action updated successfully'], 200);
-                }
+                response()->json(['message' => 'Lets Receiver action updated successfully'], 200);
             }
         }
 
@@ -218,14 +214,14 @@ class LetsController extends Controller
         }
 
         $subscription = SubscriptionModel::where('user_id', $lets_details->user_id)
-            ->orderBy('created_at', 'desc')
-            ->select(['id'])
+            ->select('id')
+            ->latest()
             ->first();
 
         // Decrement lets_count in SubscriptionModel
         SubscriptionModel::where('user_id', $lets_details->user_id)->where('id', $subscription->id)->decrement('lets_count');
 
-        Common::logSystemActivity('User Accepted Lets', 'Lets Accepted', 'API');
+        // Common::logSystemActivity('User Accepted Lets', 'Lets Accepted', 'API');
 
         return response()->json(['message' => 'Lets Accepted Successfully'], 200);
     }
@@ -254,21 +250,23 @@ class LetsController extends Controller
             return response()->json(['message' => 'User not found'], 404);
         }
         // get incoming request
-        $lets_receiver_logs = LetsReceiverLogModel::select('lets_id')->where('user_id', $user->id)->latest()->get();
+        $lets_receiver_logs = LetsReceiverLogModel::select('lets_id')->where(['user_id' => $user->id, 'action' => null])->latest()->get();
         $letsArr = [];
         foreach ($lets_receiver_logs as $lets) {
             // get lets details of request
-            $letsEvt = LetsModel::select('user_id', 'event_name', 'duration')->where(['id' => $lets->lets_id, 'status' => '1'])
+            $letsEvt = LetsModel::select('id', 'user_id', 'event_name', 'duration')->where(['id' => $lets->lets_id, 'status' => '1', 'acceptor_id' => null])
                 ->first();
-            $lets_data['lets'] = $letsEvt;
-            // get last 3 activities of lets shooter
-            $lets_data['activities'] = LetsModel::select('event_name')->where(['user_id' => $letsEvt->user_id, 'handshake_status' => 2])
-                ->latest()
-                ->take(3)
-                ->get();
-            $lets_data['shooter'] = User::select('name', 'age', 'profile1', 'profile2')->where('id', $letsEvt->user_id)
-                ->first();
-            array_push($letsArr, $lets_data);
+            if ($letsEvt) {
+                $lets_data['lets'] = $letsEvt;
+                // get last 3 activities of lets shooter
+                $lets_data['activities'] = LetsModel::select('event_name')->where(['user_id' => $letsEvt->user_id, 'handshake_status' => 2])
+                    ->latest()
+                    ->take(3)
+                    ->get();
+                $lets_data['shooter'] = User::select('name', 'age', 'gender', 'profile1', 'profile2')->where('id', $letsEvt->user_id)
+                    ->first();
+                array_push($letsArr, $lets_data);
+            }
         }
         return response()->json(['message' => 'Lets Request Data', 'lets_data' => $letsArr], 200);
     }
