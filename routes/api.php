@@ -21,11 +21,12 @@ use App\Http\Controllers\API\TransactionController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Route::get('/test',function(){
+
+Route::get('/test', function () {
     return "Test";
 });
 
-Route::group(['middleware' => 'auth:sanctum'], function(){
+Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     })->name('user');
@@ -54,6 +55,8 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
     Route::post('/letsAcceptor', [LetsController::class, 'letsAcceptor']);
 
     Route::get('/getLets', [LetsController::class, 'getLetsDetails']);
+    Route::get('/getMatchLocation', [LetsController::class, 'getMatchLocation']);
+    Route::post('/updateMatchDetails', [LetsController::class, 'updateMatchDetails']);
 
     Route::get('/getSubscriptions', [SubscriptionController::class, 'index']);
 
@@ -74,7 +77,6 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
     Route::post('/getOrderId', [TransactionController::class, 'getOrderId']);
 
     Route::post('/updatePaymentStatus', [TransactionController::class, 'updatePaymentStatus']);
-
 });
 
 Route::post('/signup', [AuthController::class, 'sign_up']);
