@@ -18,10 +18,12 @@ return new class extends Migration
             $table->integer('amount')->nullable();
             $table->string('payment_mode')->nullable();
             $table->string('transaction_id')->nullable();
+            $table->string('order_id')->nullable();
             $table->integer('lets_count')->nullable();
             $table->integer('remaining_days_count')->nullable();
             $table->string('validity')->nullable();
             $table->string('start_date')->nullable();
+            $table->string('razorpay_response')->nullable();
             $table->string('end_date')->nullable();
             $table->enum('status', ['0', '1'])
                 ->default('1')

@@ -167,7 +167,7 @@ class LetsController extends Controller
             $extension = explode('/', explode(':', substr($base64Image, 0, strpos($base64Image, ';')))[1])[1];
             $fileName = time() . '.' . $extension;
             $fullPath = Storage::disk('public')->put('image/' . $fileName, $imageData);
-            $acceptor_selfie_path = "image/".$fileName;
+            $acceptor_selfie_path = "image/" . $fileName;
         } else {
             $acceptor_selfie_path = NULL;
         }
@@ -177,7 +177,9 @@ class LetsController extends Controller
             ->first();
 
         // Common::print_r_custom($letsReceiverDetails);
-
+        if (!$letsReceiverDetails) {
+            return response()->json(['message' => 'Lets record not found'], 401);
+        }
         if ($letsReceiverDetails['action'] == 'accept') {
             return response()->json(['message' => 'OOPS! You Just missed it'], 200);
         } else {
@@ -226,25 +228,26 @@ class LetsController extends Controller
         return response()->json(['message' => 'Lets Accepted Successfully'], 200);
     }
 
-    public function getLetsDetails() {
+    public function getLetsDetails()
+    {
         $user = Auth::user();
 
         if (is_null($user)) {
             return response()->json(['message' => 'User not found'], 404);
         }
-        $creator=[
-            'name'=>$user['name'],
-            'age'=>$user['age'],
-            'profile'=>$user['profile1'],
-            'longitude'=>$user['longitude'],
-            'latitude'=>$user['latitude'],
-            ];
-        $lets_data = LetsModel::where(['status'=> '1','user_id'=>$user->id])->latest()->first();
-        if(!empty($lets_data->acceptor_id))
-            $acceptor=User::select('name','age','longitude','latitude')->where('id',$lets_data->acceptor_id)->first();
+        $creator = [
+            'name' => $user['name'],
+            'age' => $user['age'],
+            'profile' => $user['profile1'],
+            'longitude' => $user['longitude'],
+            'latitude' => $user['latitude'],
+        ];
+        $lets_data = LetsModel::where(['status' => '1', 'user_id' => $user->id])->latest()->first();
+        if (!empty($lets_data->acceptor_id))
+            $acceptor = User::select('name', 'age', 'longitude', 'latitude')->where('id', $lets_data->acceptor_id)->first();
         else
-            $acceptor=[];
-        return response()->json(['message' => 'Lets Data', 'list' => $lets_data,'acceptor'=>$acceptor,'creator'=>$creator], 200);
+            $acceptor = [];
+        return response()->json(['message' => 'Lets Data', 'list' => $lets_data, 'acceptor' => $acceptor, 'creator' => $creator], 200);
     }
 
     public function getLetsDetailRequests()
@@ -274,5 +277,32 @@ class LetsController extends Controller
             }
         }
         return response()->json(['message' => 'Lets Request Data', 'lets_data' => $letsArr], 200);
+    }
+    public function getMatchLocation(Request $request)
+    {
+        $lets_data = LetsModel::where(['id' => $request->id])->first();
+        if ($lets_data)
+            return response()->json(['message' => 'Lets Request Data', 'lets_data' => $lets_data], 200);
+        else
+            return response()->json(['message' => 'Lets Not found'], 400);
+    }
+    public function updateMatchDetails(Request $request)
+    {
+        $data = $request->validate([
+            'type' => 'required|string',
+            'longitude' => 'required',
+            'latitude' => 'required',
+        ]);
+        if ($data['type'] == 'creator')
+            $query = LetsModel::where(['id' => $request->id])->update(['creator_longitude' => $data['longitude'], 'creator_latitude' => $data['latitude']]);
+        if ($data['type'] == 'acceptor')
+            $query = LetsModel::where(['id' => $request->id])->update(['acceptor_longitude' => $data['longitude'], 'acceptor_latitude' => $data['latitude']]);
+        if ($request->status == 'complete') {
+            $query = LetsModel::where(['id' => $request->id])->update(['status' => 2]);
+        }
+        if ($query)
+            return response()->json(['message' => 'Lets updated'], 200);
+        else
+            return response()->json(['message' => 'Lets Not found'], 400);
     }
 }

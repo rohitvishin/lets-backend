@@ -103,14 +103,14 @@ class UserController extends Controller
                 'name' => 'required|string',
                 // 'email' => 'required|string|unique:users,email,' . $user->id, // Add the user's ID
                 'username' => 'required|string|unique:users,username,' . $user->id, // Add the user's ID
-                'password' => 'required|string',
+                // 'password' => 'required|string',
                 'age' => 'numeric',
                 // 'phone' => 'numeric|unique:users,phone,' . $user->id, // Add the user's ID
                 'dob' => 'date',
                 'gender' => 'string',
                 'profile1' => 'image|mimes:jpeg,png,jpg|max:2048',
                 'profile2' => 'image|mimes:jpeg,png,jpg|max:2048',
-                'selfie' => 'image|mimes:jpeg,png,jpg|max:2048'
+                // 'selfie' => 'image|mimes:jpeg,png,jpg|max:2048'
             ]);
             
         } catch (ValidationException $e) {
@@ -129,18 +129,18 @@ class UserController extends Controller
             $profile2_path = NULL;
         }
 
-        if ($request->hasFile('selfie')) {
-            $selfie_path = $request->file('selfie')->store('image', 'public');
-        } else {
-            $selfie_path = NULL;
-        }
+        // if ($request->hasFile('selfie')) {
+        //     $selfie_path = $request->file('selfie')->store('image', 'public');
+        // } else {
+        //     $selfie_path = NULL;
+        // }
 
         $userData = User::find($user->id);
 
         // Update the user's information using the $user object
         $userData->name = $data['name'];
         // $userData->email = $data['email'];
-        $userData->password = bcrypt($data['password']);
+        // $userData->password = bcrypt($data['password']);
         $userData->username = $data['username'];
         $userData->age = $data['age'];
         // $userData->phone = $data['phone'];
@@ -148,7 +148,7 @@ class UserController extends Controller
         $userData->gender = $data['gender'];
         $userData->profile1 = $profile1_path;
         $userData->profile2 = $profile2_path;
-        $userData->selfie = $selfie_path;
+        // $userData->selfie = $selfie_path;
 
         // Save the updated user
         $userData->save();
@@ -408,5 +408,32 @@ class UserController extends Controller
         PasswordReset::where('email', $user->email)->delete();
 
         return "<h1>Password Saved Successfully</h1>";
+    }
+    
+    /**
+     * Update Forgot Password for user 
+     *
+     * @param  Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function resetForgotPassword(Request $request)
+    {
+        $data = $request->validate([
+            'email' => 'required|string',
+            'password' => 'required|string',
+        ]);
+        
+
+        $user = User::where('email' , $data['email'])->get();
+        
+        if (count($user) == 0) {
+            return response()->json(['success' => false, 'message' => 'oops! No User Found!'], 403);
+        }
+
+        $newPassword = Hash::make($data['password']);
+        User::where('email' , $data['email'])->update(['password' => $newPassword]);
+
+
+        return response()->json(['success' => true, 'message' => 'Password Updated successfully!'], 200);
     }
 }
