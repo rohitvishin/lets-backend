@@ -90,6 +90,8 @@ class LetsController extends Controller
         $usersNearBy = [];
 
         foreach ($all_users_in_same_location as $users_list) {
+
+            
             $distance = Common::distance_meters($user_details->latitude, $user_details->longitude, $users_list['latitude'], $users_list['longitude'], $radius);
 
             if ($distance !== null && $distance <= $radius) {
@@ -128,6 +130,7 @@ class LetsController extends Controller
 
                 foreach ($usersNearBy as $userNearByList) {
 
+                    // Notify User
                     $newLetsReceiverRecord = LetsReceiverLogModel::create([
                         'user_id' => $userNearByList['id'],
                         'lets_id' => $newLetsRecordId,
@@ -210,6 +213,9 @@ class LetsController extends Controller
             // Save the updated record
             $lets_details->save();
 
+            // delete all other request sent
+            LetsReceiverLogModel::where('lets_id',$lets_id)->where('user_id', '!=' ,$user->id)->delete();
+            
             response()->json(['message' => 'Lets record updated successfully'], 200);
         } else {
             return response()->json(['message' => 'Lets record not found'], 404);
@@ -277,6 +283,7 @@ class LetsController extends Controller
         }
         return response()->json(['message' => 'Lets Request Data', 'lets_data' => $letsArr], 200);
     }
+    
     public function getMatchLocation(Request $request)
     {
         $lets_data = LetsModel::where(['id' => $request->id])->first();
@@ -285,7 +292,8 @@ class LetsController extends Controller
         else
             return response()->json(['message' => 'Lets Not found'], 400);
     }
-        public function updateMatchDetails(Request $request)
+
+    public function updateMatchDetails(Request $request)
     {
         $data = $request->validate([
             'type' => 'required|string',
