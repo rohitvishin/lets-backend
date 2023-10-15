@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\PlansModel;
 use App\Models\SubscriptionModel;
+use App\Models\CoinTransactionsModel;
 use App\Models\User;
 
 class SubscriptionController extends Controller
