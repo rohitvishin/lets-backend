@@ -10,6 +10,7 @@ use App\Http\Controllers\API\SubscriptionController;
 use App\Http\Controllers\API\LetsController;
 use App\Http\Controllers\API\ReportController;
 use App\Http\Controllers\API\TransactionController;
+use App\Http\Controllers\API\CoinTransactionsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -77,6 +78,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('/getOrderId', [TransactionController::class, 'getOrderId']);
 
     Route::post('/updatePaymentStatus', [TransactionController::class, 'updatePaymentStatus']);
+    
+    Route::get('/userCoinTransactions', [CoinTransactionsController::class, 'show']);
 });
 
 Route::post('/signup', [AuthController::class, 'sign_up']);

@@ -78,7 +78,7 @@ class AdminController extends Controller
     $data['packagecount'] = PlansModel::all()->count();
     $data['paymentcount'] = SubscriptionModel::sum("amount");
     $data['subscriptioncount'] = SubscriptionModel::all()->count();
-    $data['users'] = User::select('users.*', 'plans.package_name AS plan_name')->join('subscription', 'users.id', '=', 'subscription.user_id')->join('plans', 'subscription.plan_id', '=', 'plans.id')->with('subscription')->orderBy('id', 'desc')->limit(10)->get()->toArray();
+    $data['users'] = User::select('users.*', 'plans.name AS plan_name')->join('subscription', 'users.id', '=', 'subscription.user_id')->join('plans', 'subscription.plan_id', '=', 'plans.id')->with('subscription')->orderBy('id', 'desc')->limit(10)->get()->toArray();
 
     // dd($data['ticket']);
     return view('admin.dashboard', $data);
@@ -189,7 +189,7 @@ class AdminController extends Controller
   public function allUsers(Request $request){
     $this->checkUserType($request);
     // $data['users'] = User::select('*')->with('subscription')->get()->toArray();
-    $data['users'] = User::select('users.*', 'plans.package_name AS plan_name')->join('subscription', 'users.id', '=', 'subscription.user_id')->join('plans', 'subscription.plan_id', '=', 'plans.id')->with('subscription')->get()->toArray();
+    $data['users'] = User::select('users.*', 'plans.name AS plan_name')->join('subscription', 'users.id', '=', 'subscription.user_id')->join('plans', 'subscription.plan_id', '=', 'plans.id')->with('subscription')->get()->toArray();
     $data['packages'] = PlansModel::where('status','1')->get()->toArray();
     return view('admin.manageUser',$data);
 }

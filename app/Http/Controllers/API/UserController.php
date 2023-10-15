@@ -146,8 +146,12 @@ class UserController extends Controller
         // $userData->phone = $data['phone'];
         $userData->dob = $data['dob'];
         $userData->gender = $data['gender'];
-        $userData->profile1 = $profile1_path;
-        $userData->profile2 = $profile2_path;
+        
+        if($profile1_path != null)
+            $userData->profile1 = $profile1_path;
+
+        if($profile2_path != null)
+            $userData->profile2 = $profile2_path;
         // $userData->selfie = $selfie_path;
 
         // Save the updated user
@@ -435,5 +439,30 @@ class UserController extends Controller
 
 
         return response()->json(['success' => true, 'message' => 'Password Updated successfully!'], 200);
+    }
+
+    public function getUserCoinTransaction(Request $request){
+        $user = Auth::user();
+
+        if (is_null($user)) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        try {
+            $data = $request->validate([
+                'token' => 'required|string'
+            ]);
+            
+        } catch (ValidationException $e) {
+            return response()->json(['error' => $e->errors()], 400);
+        }
+
+        $userData = User::find($user->id);
+
+        $res = [
+            'user' => $userData,
+            'msg' => 'Users Details as per Token'
+        ];
+        return response($res, 201);
     }
 }
