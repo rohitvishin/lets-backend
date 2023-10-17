@@ -41,6 +41,7 @@ class ReportController extends Controller
         try {
             $data = $request->validate([
                 'user_id' => 'required',
+                'report_type' => 'required|int',
                 'reason' => 'required|string'
             ]);
         } catch (ValidationException $e) {
@@ -49,6 +50,7 @@ class ReportController extends Controller
 
         $reports = ReportModel::create([
             'user_id' => $data['user_id'],
+            'report_type' => $data['report_type'],
             'reason' => $data['reason'],
             'reported_by' => $user->id,
         ]);

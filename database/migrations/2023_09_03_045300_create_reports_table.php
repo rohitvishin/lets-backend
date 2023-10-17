@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->integer('user_id')->unsigned()->nullable();
             $table->integer('reported_by')->unsigned()->nullable();
+            $table->tinyInteger('report_type')->default('1')
+            ->comment('1: good, 0: bad');
             $table->string('reason')->nullable();
             $table->enum('status', ['0', '1'])
                 ->default('1')
