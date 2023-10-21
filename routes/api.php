@@ -38,6 +38,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     //Without User's Email and Phone
     Route::post('/updateUser', [UserController::class, 'update']);
 
+    Route::post('/updateCoin', [UserController::class, 'updateCoin']);
+
     Route::post('/updateUserLocation', [UserController::class, 'update_location_api']);
 
     Route::post('/updateUserFilter', [UserController::class, 'update_filter_api']);
