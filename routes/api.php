@@ -56,7 +56,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::post('/letsAcceptor', [LetsController::class, 'letsAcceptor']);
 
-    Route::get('/getLets', [LetsController::class, 'getLetsDetails']);
+    Route::post('/getLets', [LetsController::class, 'getLetsDetails']);
     Route::post('/getMatchLocation', [LetsController::class, 'getMatchLocation']);
     Route::post('/updateMatchDetails', [LetsController::class, 'updateMatchDetails']);
 

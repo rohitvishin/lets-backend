@@ -205,7 +205,7 @@ class LetsController extends Controller
             $lets_details->acceptor_longitude = $letsReceiverDetails->user_longitude;
             $lets_details->acceptor_latitude = $letsReceiverDetails->user_latitude;
             $lets_details->acceptor_selfie = $acceptor_selfie_path;
-            $lets_details->handshake_status = '1';
+            $lets_details->handshake_status = '0';
             $lets_details->updated_at = date('Y-m-d H:i:s', time());
 
             // Save the updated record
