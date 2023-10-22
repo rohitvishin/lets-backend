@@ -89,7 +89,7 @@ class LetsController extends Controller
 
         foreach ($all_users_in_same_location as $users_list) {
 
-            
+
             $distance = Common::distance_meters($user_details->latitude, $user_details->longitude, $users_list['latitude'], $users_list['longitude'], $radius);
 
             if ($distance !== null && $distance <= $radius) {
@@ -148,7 +148,20 @@ class LetsController extends Controller
             }
         }
     }
+    public function letsNoUser()
+    {
+        $user = Auth::user();
 
+        if (is_null($user)) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+        $lets_data = LetsModel::where(['user_id' => $user->id])->latest()->first();
+        if (!empty($lets_data->id)) {
+            LetsReceiverLogModel::where('lets_id', $lets_data->id)->update(['action' => 'reject']);
+            return response()->json(['message' => 'Lets updated'], 200);
+        }
+        return response()->json(['message' => 'Lets not found'], 400);
+    }
     public function letsAcceptor(Request $request)
     {
         $user = Auth::user();
@@ -168,7 +181,7 @@ class LetsController extends Controller
             $extension = explode('/', explode(':', substr($base64Image, 0, strpos($base64Image, ';')))[1])[1];
             $fileName = time() . '.' . $extension;
             $fullPath = Storage::disk('public')->put('image/' . $fileName, $imageData);
-            $acceptor_selfie_path = "image/".$fileName;
+            $acceptor_selfie_path = "image/" . $fileName;
         } else {
             $acceptor_selfie_path = NULL;
         }
@@ -176,8 +189,8 @@ class LetsController extends Controller
         $letsReceiverDetails = LetsReceiverLogModel::where(['lets_id' => $lets_id, 'user_id' => $user->id])
             ->select(['user_longitude', 'user_latitude', 'action', 'user_id', 'id', 'lets_id'])
             ->first();
-        if(!$letsReceiverDetails){
-             return response()->json(['message' => 'Lets record not found'], 401);
+        if (!$letsReceiverDetails) {
+            return response()->json(['message' => 'Lets record not found'], 401);
         }
         // Common::print_r_custom($letsReceiverDetails);
 
@@ -212,8 +225,8 @@ class LetsController extends Controller
             $lets_details->save();
 
             // delete all other request sent
-            LetsReceiverLogModel::where('lets_id',$lets_id)->where('user_id', '!=' ,$user->id)->delete();
-            
+            LetsReceiverLogModel::where('lets_id', $lets_id)->where('user_id', '!=', $user->id)->delete();
+
             response()->json(['message' => 'Lets record updated successfully'], 200);
         } else {
             return response()->json(['message' => 'Lets record not found'], 404);
@@ -232,25 +245,26 @@ class LetsController extends Controller
         return response()->json(['message' => 'Lets Accepted Successfully'], 200);
     }
 
-    public function getLetsDetails() {
+    public function getLetsDetails()
+    {
         $user = Auth::user();
 
         if (is_null($user)) {
             return response()->json(['message' => 'User not found'], 404);
         }
-        $creator=[
-            'name'=>$user['name'],
-            'age'=>$user['age'],
-            'profile'=>$user['profile1'],
-            'longitude'=>$user['longitude'],
-            'latitude'=>$user['latitude'],
-            ];
-        $lets_data = LetsModel::where(['user_id'=>$user->id])->latest()->first();
-        if(!empty($lets_data->acceptor_id))
-            $acceptor=User::select('name','age','longitude','latitude')->where('id',$lets_data->acceptor_id)->first();
+        $creator = [
+            'name' => $user['name'],
+            'age' => $user['age'],
+            'profile' => $user['profile1'],
+            'longitude' => $user['longitude'],
+            'latitude' => $user['latitude'],
+        ];
+        $lets_data = LetsModel::where(['user_id' => $user->id])->latest()->first();
+        if (!empty($lets_data->acceptor_id))
+            $acceptor = User::select('name', 'age', 'longitude', 'latitude')->where('id', $lets_data->acceptor_id)->first();
         else
-            $acceptor=[];
-        return response()->json(['message' => 'Lets Data', 'list' => $lets_data,'acceptor'=>$acceptor,'creator'=>$creator], 200);
+            $acceptor = [];
+        return response()->json(['message' => 'Lets Data', 'list' => $lets_data, 'acceptor' => $acceptor, 'creator' => $creator], 200);
     }
 
     public function getLetsDetailRequests()
@@ -281,7 +295,7 @@ class LetsController extends Controller
         }
         return response()->json(['message' => 'Lets Request Data', 'lets_data' => $letsArr], 200);
     }
-    
+
     public function getMatchLocation(Request $request)
     {
         $lets_data = LetsModel::where(['id' => $request->id])->first();
@@ -303,7 +317,7 @@ class LetsController extends Controller
         if ($data['type'] == 'acceptor')
             $query = LetsModel::where(['id' => $request->id])->update(['acceptor_longitude' => $data['longitude'], 'acceptor_latitude' => $data['latitude']]);
         if ($request->status == 'complete') {
-            $query = LetsModel::where(['id' => $request->id])->update(['status' => 2,'handshake_status'=>2]);
+            $query = LetsModel::where(['id' => $request->id])->update(['status' => 2, 'handshake_status' => 2]);
         }
         if ($query)
             return response()->json(['message' => 'Lets updated'], 200);

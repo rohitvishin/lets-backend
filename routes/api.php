@@ -53,6 +53,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('/verifyEmail', [AuthController::class, 'verify_email']);
 
     Route::post('/letsCreator', [LetsController::class, 'letsCreator']);
+    Route::post('/letsNoUser', [LetsController::class, 'letsNoUser']);
 
     Route::post('/letsAcceptor', [LetsController::class, 'letsAcceptor']);
 
