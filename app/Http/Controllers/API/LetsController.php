@@ -172,27 +172,12 @@ class LetsController extends Controller
 
         $lets_id = $request->lets_id;
         $action = $request->action;
-
-        if ($request->has('acceptor_selfie')) {
-            $base64Image = $request->input('acceptor_selfie');
-            list($type, $base64Data) = explode(';', $base64Image);
-            list(, $base64Data) = explode(',', $base64Data);
-            $imageData = base64_decode($base64Data);
-            $extension = explode('/', explode(':', substr($base64Image, 0, strpos($base64Image, ';')))[1])[1];
-            $fileName = time() . '.' . $extension;
-            $fullPath = Storage::disk('public')->put('image/' . $fileName, $imageData);
-            $acceptor_selfie_path = "image/" . $fileName;
-        } else {
-            $acceptor_selfie_path = NULL;
-        }
-
         $letsReceiverDetails = LetsReceiverLogModel::where(['lets_id' => $lets_id, 'user_id' => $user->id])
             ->select(['user_longitude', 'user_latitude', 'action', 'user_id', 'id', 'lets_id'])
             ->first();
         if (!$letsReceiverDetails) {
             return response()->json(['message' => 'Lets record not found'], 401);
         }
-        // Common::print_r_custom($letsReceiverDetails);
 
         if ($letsReceiverDetails['action'] !== null) {
             return response()->json(['message' => 'OOPS! You Just missed it'], 200);
@@ -206,6 +191,18 @@ class LetsController extends Controller
 
                 response()->json(['message' => 'Lets Receiver action updated successfully'], 200);
             }
+        }
+        if ($request->has('acceptor_selfie')) {
+            $base64Image = $request->input('acceptor_selfie');
+            list($type, $base64Data) = explode(';', $base64Image);
+            list(, $base64Data) = explode(',', $base64Data);
+            $imageData = base64_decode($base64Data);
+            $extension = explode('/', explode(':', substr($base64Image, 0, strpos($base64Image, ';')))[1])[1];
+            $fileName = time() . '.' . $extension;
+            $fullPath = Storage::disk('public')->put('image/' . $fileName, $imageData);
+            $acceptor_selfie_path = "image/" . $fileName;
+        } else {
+            $acceptor_selfie_path = NULL;
         }
 
         $lets_details = LetsModel::where('id', $lets_id)->first();
@@ -311,13 +308,16 @@ class LetsController extends Controller
             'type' => 'required|string',
             'longitude' => 'required',
             'latitude' => 'required',
+            'meter' => 'required',
         ]);
         if ($data['type'] == 'creator')
             $query = LetsModel::where(['id' => $request->id])->update(['creator_longitude' => $data['longitude'], 'creator_latitude' => $data['latitude']]);
         if ($data['type'] == 'acceptor')
             $query = LetsModel::where(['id' => $request->id])->update(['acceptor_longitude' => $data['longitude'], 'acceptor_latitude' => $data['latitude']]);
-        if ($request->status == 'complete') {
+        if ($request->meter <= 60 && $request->meter >= 20) {
             $query = LetsModel::where(['id' => $request->id])->update(['status' => 2, 'handshake_status' => 2]);
+        } else if ($request->meter <= 20) {
+            $query = LetsModel::where(['id' => $request->id])->update(['status' => 2, 'handshake_status' => 1]);
         }
         if ($query)
             return response()->json(['message' => 'Lets updated'], 200);

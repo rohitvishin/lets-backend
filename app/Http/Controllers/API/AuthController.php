@@ -14,6 +14,8 @@ use App\Http\Controllers\Controller;
 
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendOTP;
+use App\Models\PlansModel;
+use App\Models\SubscriptionModel;
 
 class AuthController extends Controller
 {
@@ -91,6 +93,30 @@ class AuthController extends Controller
             'to_age_filter' => $data['age']+2,
             'referral_code' => $referralCode,
             'ref_id' => $user_id
+        ]);
+        $planData = PlansModel::where('id', 3)->first();
+
+        $start = now();
+
+        $start_date = $start->format('Y-m-d H:i:s');
+
+        $validity = now()->addDays($planData['validity']);
+
+        $end_date = $validity->format('Y-m-d H:i:s');
+
+        $numberOfDays = $start->diffInDays($validity);
+
+        SubscriptionModel::create([
+            'user_id' => $user->id,
+            'plan_id' => $planData['id'],
+            'amount' => $planData['amount'],
+            'payment_mode' => 'free',
+            'transaction_id' => 'free',
+            'lets_count' => $planData['lets_count'],
+            'remaining_days_count' => $numberOfDays,
+            'validity' => $planData['validity'],
+            'start_date' => $start_date,
+            'end_date' => $end_date
         ]);
 
         $token = $user->createToken('apiToken')->plainTextToken;
